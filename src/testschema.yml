@@ -36,10 +36,9 @@ pipeline:
             name:
               type: string
               required: true
-            task:
-              run:
+            run:
+              type: string
+            docker-build:
+              docker-file-path:
                 type: string
-              docker-build:
-                docker-file-path:
-                  type: string
 
