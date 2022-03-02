@@ -1,10 +1,9 @@
 import { Logger } from 'tslog';
-import { myContainer } from './inversify-example/inversify.config';
-import { TYPES } from './inversify-example/types';
-import { Warrior } from './inversify-example/interfaces';
+import YAML from 'yaml';
+import fs from 'fs';
+import path from 'path';
 
-const ninja = myContainer.get<Warrior>(TYPES.Warrior);
 const log: Logger = new Logger();
 
-log.info(ninja.fight());
-log.info(ninja.sneak());
+// const file = fs.readFileSync(path.join(__dirname, './testdsl.yml'), 'utf8');
+// log.info(YAML.parse(file));

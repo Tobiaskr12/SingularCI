@@ -1,60 +1,62 @@
 {
-    "name": "singularci",
-    "version": "0.1.0",
-    "description": "SingularCI is a DSL transpiler used to generate CI/CD configuration files for existing CI platforms",
-    "bin": "dist/src/index.js",
-    "scripts": {
-        "start": "tsc && node dist/src/index.js",
-        "test": "jest ./test",
-        "build": "tsc",
-        "compile": "tsc && pkg . --out-path ./bin",
-        "compile:linux": "tsc && pkg . -t linux -o ./bin/singularci-linux",
-        "compile:mac": "tsc && pkg . -t macos -o ./bin/singularci-macos",
-        "compile:win": "tsc && pkg . -t win -o ./bin/singularci-win.exe",
-        "clean": "rm -rf ./dist ./bin",
-        "clean:compiled": "rm -rf ./bin",
-        "clean:dist": "rm -rf ./dist",
-        "lint": "eslint ./src"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/Tobiaskr12/SingularCI.git"
-    },
-    "jest": {
-        "preset": "ts-jest",
-        "testEnvironment": "node",
-        "verbose": true
-    },
-    "keywords": [
-        "CI",
-        "CD",
-        "CI/CD",
-        "DSL",
-        "Transpiler",
-        "TypeScript"
-    ],
-    "author": "Nicolai Krogager Asmussen & Tobias Kristensen",
-    "license": "GPL-3.0-or-later",
-    "bugs": {
-        "url": "https://github.com/Tobiaskr12/SingularCI/issues"
-    },
-    "homepage": "https://github.com/Tobiaskr12/SingularCI#readme",
-    "devDependencies": {
-        "@types/command-line-args": "^5.2.0",
-        "@types/jest": "^27.4.0",
-        "@types/node": "^17.0.13",
-        "@typescript-eslint/eslint-plugin": "^5.10.1",
-        "@typescript-eslint/parser": "^5.10.1",
-        "eslint": "^8.8.0",
-        "jest": "^27.4.7",
-        "pkg": "^5.5.2",
-        "ts-jest": "^27.1.3",
-        "typescript": "^4.5.5"
-    },
-    "dependencies": {
-        "command-line-args": "^5.2.1",
-        "inversify": "^6.0.1",
-        "reflect-metadata": "^0.1.13",
-        "tslog": "^3.3.1"
-    }
+  "name": "singularci",
+  "version": "0.1.0",
+  "description": "SingularCI is a DSL transpiler used to generate CI/CD configuration files for existing CI platforms",
+  "bin": "dist/src/index.js",
+  "scripts": {
+    "start": "tsc && cp ./src/testdsl.yml ./src/testschema.yml ./dist/src/ && node dist/src/index.js",
+    "test": "jest ./test",
+    "build": "tsc",
+    "compile": "tsc && pkg . --out-path ./bin",
+    "compile:linux": "tsc && pkg . -t linux -o ./bin/singularci-linux",
+    "compile:mac": "tsc && pkg . -t macos -o ./bin/singularci-macos",
+    "compile:win": "tsc && pkg . -t win -o ./bin/singularci-win.exe",
+    "clean": "rm -rf ./dist ./bin",
+    "clean:compiled": "rm -rf ./bin",
+    "clean:dist": "rm -rf ./dist",
+    "lint": "eslint ./src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tobiaskr12/SingularCI.git"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "verbose": true
+  },
+  "keywords": [
+    "CI",
+    "CD",
+    "CI/CD",
+    "DSL",
+    "Transpiler",
+    "TypeScript"
+  ],
+  "author": "Nicolai Krogager Asmussen & Tobias Kristensen",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/Tobiaskr12/SingularCI/issues"
+  },
+  "homepage": "https://github.com/Tobiaskr12/SingularCI#readme",
+  "devDependencies": {
+    "@types/command-line-args": "^5.2.0",
+    "@types/jest": "^27.4.0",
+    "@types/node": "^17.0.13",
+    "@typescript-eslint/eslint-plugin": "^5.10.1",
+    "@typescript-eslint/parser": "^5.10.1",
+    "eslint": "^8.8.0",
+    "jest": "^27.4.7",
+    "pkg": "^5.5.2",
+    "ts-jest": "^27.1.3",
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "command-line-args": "^5.2.1",
+    "inversify": "^6.0.1",
+    "reflect-metadata": "^0.1.13",
+    "tslog": "^3.3.1",
+    "yaml": "^1.10.2",
+    "yaml-schema-validator": "^1.2.3"
+  }
 }

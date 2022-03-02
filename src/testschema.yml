@@ -1,0 +1,45 @@
+targets:
+  - type: string
+    required: true
+
+variables:
+  - key:
+      type: string
+      required: true
+    value:
+      type: string
+      required: true
+
+pipeline:
+  trigger:
+    type:
+      - type: string
+        required: true
+    branches:
+      - type: string
+        required: true
+      
+
+  stages:
+    - stage:
+        name:
+          type: string
+          required: true
+        runs-on:
+          type: string
+          required: true
+        needs:
+          type: string
+
+        job:
+          - 
+            name:
+              type: string
+              required: true
+            task:
+              run:
+                type: string
+              docker-build:
+                docker-file-path:
+                  type: string
+

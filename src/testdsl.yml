@@ -1,0 +1,39 @@
+targets:
+  - GitHub
+  - GitLab
+
+variables:
+  - key: repo-name
+    value: Hennings-Herlige-Repo
+  - key: wakawaka-name
+    value: ${secrets.wakawaka-name}
+
+pipeline:
+  trigger: 
+    type:
+      - push
+      - pull_request
+    branches:
+      - master
+      - main
+  
+  stages:
+    - stage:
+        name: build
+        runs-on: ubuntu
+        job:
+          - name: checkout repo
+            task:
+              run: this is a checkout command
+          - name: build docker image
+            task:
+              docker-build:
+                docker-file-path: ./Dockerfile
+    
+    - stage:
+        name: test
+        runs-on: ubuntu
+        job:
+          - name: test
+            task:
+              run: this is a test command
