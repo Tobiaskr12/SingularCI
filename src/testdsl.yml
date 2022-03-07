@@ -1,16 +1,16 @@
-targets:
-  - GitHub
-  - GitLab
-
-variables:
-  - key: repo-name
-    value: Hennings-Herlige-Repo
-  - key: wakawaka-name
-    value: ${secrets.wakawaka-name}
-
 pipeline:
-  trigger: 
-    type:
+  targets:
+    - GitHub
+    - GitLab
+
+  variables:
+    - key: repo-name
+      value: Hennings-Herlige-Repo
+    - key: wakawaka-name
+      value: ${secrets.wakawaka-name}
+
+  triggers: 
+    trigger-types:
       - push
       - pull_request
     branches:

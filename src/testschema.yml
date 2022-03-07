@@ -1,18 +1,18 @@
-targets:
-  - type: string
-    required: true
-
-variables:
-  - key:
-      type: string
-      required: true
-    value:
-      type: string
-      required: true
-
 pipeline:
-  trigger:
-    type:
+  targets:
+    - type: string
+      required: true
+
+  variables:
+    - key:
+        type: string
+        required: true
+      value:
+        type: string
+        required: true
+
+  triggers:
+    trigger-types:
       - type: string
         required: true
     branches:
@@ -28,8 +28,8 @@ pipeline:
         runs-on:
           type: string
           required: true
-        needs:
-          type: string
+        predecessors:
+          - type: string
 
         job:
           - 
@@ -41,4 +41,3 @@ pipeline:
             docker-build:
               docker-file-path:
                 type: string
-
