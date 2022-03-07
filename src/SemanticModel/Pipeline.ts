@@ -2,8 +2,9 @@ import Targets from './Targets';
 import Trigger from './Trigger';
 import Variables from './Variables';
 import Stage from '../Common/Stage';
+import SemanticModel from './../Common/SemanticModel';
 
-export default class Pipeline {
+export default class Pipeline implements SemanticModel {
     
   constructor(
         private targets: Targets,
