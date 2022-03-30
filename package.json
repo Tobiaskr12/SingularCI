@@ -2,15 +2,21 @@
   "name": "singularci",
   "version": "0.1.0",
   "description": "SingularCI is a DSL transpiler used to generate CI/CD configuration files for existing CI platforms",
-  "bin": "dist/src/index.js",
+  "bin": "dist/src/CLIModule/index.js",
+  "pkg": {
+    "assets": [
+      "dist/src/testschema.yml"
+    ]
+  },
   "scripts": {
-    "start": "tsc && cp ./src/testdsl.yml ./src/testschema.yml ./dist/src/ && node dist/src/index.js",
+    "copy-files": "cp ./src/testschema.yml ./dist/src/",
+    "start": "tsc && npm run copy-files && node dist/src/CLIModule/index.js",
     "test": "jest ./test",
-    "build": "tsc",
-    "compile": "tsc && pkg . --out-path ./bin",
-    "compile:linux": "tsc && pkg . -t linux -o ./bin/singularci-linux",
-    "compile:mac": "tsc && pkg . -t macos -o ./bin/singularci-macos",
-    "compile:win": "tsc && pkg . -t win -o ./bin/singularci-win.exe",
+    "build": "tsc && npm run copy-files",
+    "compile": "tsc && npm run copy-files && pkg . --out-path ./bin",
+    "compile:linux": "tsc && npm run copy-files && pkg . -t linux -o ./bin/singularci-linux",
+    "compile:mac": "tsc && npm run copy-files && pkg . -t macos -o ./bin/singularci-macos",
+    "compile:win": "tsc && npm run copy-files && pkg . -t win -o ./bin/singularci-win.exe",
     "clean": "rm -rf ./dist ./bin",
     "clean:compiled": "rm -rf ./bin",
     "clean:dist": "rm -rf ./dist",

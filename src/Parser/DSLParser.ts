@@ -13,167 +13,171 @@ import Targets from './../SemanticModel/Targets';
 import Variables from './../SemanticModel/Variables';
 import Trigger, { Triggers } from '../SemanticModel/Trigger';
 
-const inputFile = fs.readFileSync(path.join(__dirname, '../testdsl.yml'), 'utf8');
-
 export default class DSLParser{
 
-    parse(): SemanticModel {
-      const targets = this.buildTargets();
-      const triggers = this.buildTriggers();
-      const variables = this.buildVariables();
-      const stages = this.buildStages();
-      this.buildSymbolTable(stages);
+  private inputFile;
 
-      return this.buildSemanticModel(targets, variables, triggers);
-    }
+  constructor(inputFileName: string) {
+    this.inputFile = fs.readFileSync(path.join(process.cwd(), inputFileName), 'utf8');;
+  }
 
-    private buildTargets(): string[] {
-      try {
-       const targetsArray = YAML.parse(inputFile)['pipeline']['targets']; 
-       const targets = new Targets();
-       
-       for (let target of targetsArray) {
-         targets.addTarget(target);
-       }
+  parse(): SemanticModel {
+    const targets = this.buildTargets();
+    const triggers = this.buildTriggers();
+    const variables = this.buildVariables();
+    const stages = this.buildStages();
+    this.buildSymbolTable(stages);
 
-       return targets.getTargets();
-      } catch (error: any) {
-        // TODO: throw custom error
-        throw new Error(error.message);
-      }
-    }
-    
-    private buildTriggers(): Triggers {
-      try {
-        const triggersArray = YAML.parse(inputFile)['pipeline']['triggers'];
-        const triggers = new Trigger();
+    return this.buildSemanticModel(targets, variables, triggers);
+  }
 
-        for (let triggerTypes of triggersArray.trigger_types) {
-          triggers.addType(triggerTypes);
-        }
-
-        for (let triggerBranch of triggersArray.branches) {
-          triggers.addBranch(triggerBranch);
-        }
-        
-        return triggers.getTriggers();
-      } catch (error: any) {
-        // TODO: throw custom error
-        throw new Error(error.message);
-      }
-    }
-
-    private buildVariables(): Record<string, string> {
-      try {
-        const variablesArray = YAML.parse(inputFile)['pipeline']['variables'];
-        const variables = new Variables();
-
-        for (let variable of variablesArray) {
-          variables.addVariable(variable.key, variable.value);
-        }
-
-        return variables.getVariables();
-      } catch (error: any) {
-        // TODO: throw custom error
-        throw new Error(error.message);
-      }
-    }
-
-    private buildStages(): StageBuilder[]  {
-      try {
-        const stages = YAML.parse(inputFile)['pipeline']['stages'];
-        const stageList: StageBuilder[] = [];
-
-        for (let stageObject of stages) {
-          stageList.push(this.buildStage(stageObject.stage))
-        }
-
-        return stageList;
-      } catch (error: any) {
-        // TODO: throw custom error
-        throw new Error(error.message);
-      }
-    }
-    
-    private buildSymbolTable(stages: StageBuilder[]) {
-      const stageSymbolTable = StageSymbolTable.getInstance();
-
-      for (let stage of stages) { 
-        stageSymbolTable.addStage(stage);
-      }
-    }
-
-    private buildStage(stage: StageSyntaxType): StageBuilder {
-      const stageBuilder = new StageBuilder();
-
-      if (stage.name && stage.runs_on && stage.job) {
-        stageBuilder.setName(stage.name);
-        stageBuilder.setRunsOn(stage.runs_on);
+  private buildTargets(): string[] {
+    try {
+      const targetsArray = YAML.parse(this.inputFile)['pipeline']['targets']; 
+      const targets = new Targets();
       
-        this.addNeedsToStage(stage, stageBuilder);
-        this.populateJobs(stage, stageBuilder);
-
-      } else {
-        // TODO: throw custom error
-        throw new Error(`Stage is missing a name or runs_on property`);
+      for (let target of targetsArray) {
+        targets.addTarget(target);
       }
 
-      return stageBuilder;
+      return targets.getTargets();
+    } catch (error: any) {
+      // TODO: throw custom error
+      throw new Error(error.message);
     }
+  }
+  
+  private buildTriggers(): Triggers {
+    try {
+      const triggersArray = YAML.parse(this.inputFile)['pipeline']['triggers'];
+      const triggers = new Trigger();
 
-    private addNeedsToStage(stage: StageSyntaxType, stageBuilder: StageBuilder) {
-      if (stage.needs) {
-        for (let need of stage.needs) {
-          stageBuilder.addNeeds(need);
-        }
+      for (let triggerTypes of triggersArray.trigger_types) {
+        triggers.addType(triggerTypes);
       }
-    }
 
-    private populateJobs(stage: StageSyntaxType, stageBuilder: StageBuilder) {
-      for (let job of stage.job) {
-        const jobBuilder = new JobBuilder();
-        this.addTasksToJob(job, jobBuilder);
-
-        stageBuilder.addJob(
-          new Job(jobBuilder.getTasks())
-        );
+      for (let triggerBranch of triggersArray.branches) {
+        triggers.addBranch(triggerBranch);
       }
-    }
-
-    private addTasksToJob(job: JobSyntaxType, jobBuilder: JobBuilder) {
-      if (job.run) {
-        const run = new Run(job.run);
-        jobBuilder.addTask(run);
-      } 
       
-      if (job.docker_build) { 
-        const docker_build = new BuildDockerImage(
-          job.docker_build.image_name,
-          job.docker_build.docker_file_path
-        )
-        jobBuilder.addTask(docker_build);
-      }
+      return triggers.getTriggers();
+    } catch (error: any) {
+      // TODO: throw custom error
+      throw new Error(error.message);
     }
+  }
 
-    private buildSemanticModel(targets: string[], variables: Record<string, string>, trigger: Triggers): SemanticModel {
-      const stageSymbolTable = StageSymbolTable.getInstance();
-      const semanticModel = new SemanticModel();
+  private buildVariables(): Record<string, string> {
+    try {
+      const variablesArray = YAML.parse(this.inputFile)['pipeline']['variables'];
+      const variables = new Variables();
 
-      for (let stage in stageSymbolTable.getStages()) {
-        const stageBuilder = stageSymbolTable.getStage(stage);
-        const finalStage = new Stage(
-          stageBuilder.getName(),
-          stageBuilder.getJobs(),
-          stageBuilder.getNeeds(),
-          stageBuilder.getRunsOn()
-        )
-        semanticModel.addStage(finalStage);
+      for (let variable of variablesArray) {
+        variables.addVariable(variable.key, variable.value);
       }
 
-      semanticModel.setTargets(targets);
-      semanticModel.setVariables(variables);
-      semanticModel.setTrigger(trigger);
-
-      return semanticModel;
+      return variables.getVariables();
+    } catch (error: any) {
+      // TODO: throw custom error
+      throw new Error(error.message);
     }
+  }
+
+  private buildStages(): StageBuilder[]  {
+    try {
+      const stages = YAML.parse(this.inputFile)['pipeline']['stages'];
+      const stageList: StageBuilder[] = [];
+
+      for (let stageObject of stages) {
+        stageList.push(this.buildStage(stageObject.stage))
+      }
+
+      return stageList;
+    } catch (error: any) {
+      // TODO: throw custom error
+      throw new Error(error.message);
+    }
+  }
+  
+  private buildSymbolTable(stages: StageBuilder[]) {
+    const stageSymbolTable = StageSymbolTable.getInstance();
+
+    for (let stage of stages) { 
+      stageSymbolTable.addStage(stage);
+    }
+  }
+
+  private buildStage(stage: StageSyntaxType): StageBuilder {
+    const stageBuilder = new StageBuilder();
+
+    if (stage.name && stage.runs_on && stage.job) {
+      stageBuilder.setName(stage.name);
+      stageBuilder.setRunsOn(stage.runs_on);
+    
+      this.addNeedsToStage(stage, stageBuilder);
+      this.populateJobs(stage, stageBuilder);
+
+    } else {
+      // TODO: throw custom error
+      throw new Error(`Stage is missing a name or runs_on property`);
+    }
+
+    return stageBuilder;
+  }
+
+  private addNeedsToStage(stage: StageSyntaxType, stageBuilder: StageBuilder) {
+    if (stage.needs) {
+      for (let need of stage.needs) {
+        stageBuilder.addNeeds(need);
+      }
+    }
+  }
+
+  private populateJobs(stage: StageSyntaxType, stageBuilder: StageBuilder) {
+    for (let job of stage.job) {
+      const jobBuilder = new JobBuilder();
+      this.addTasksToJob(job, jobBuilder);
+
+      stageBuilder.addJob(
+        new Job(jobBuilder.getTasks())
+      );
+    }
+  }
+
+  private addTasksToJob(job: JobSyntaxType, jobBuilder: JobBuilder) {
+    if (job.run) {
+      const run = new Run(job.run);
+      jobBuilder.addTask(run);
+    } 
+    
+    if (job.docker_build) { 
+      const docker_build = new BuildDockerImage(
+        job.docker_build.image_name,
+        job.docker_build.docker_file_path
+      )
+      jobBuilder.addTask(docker_build);
+    }
+  }
+
+  private buildSemanticModel(targets: string[], variables: Record<string, string>, trigger: Triggers): SemanticModel {
+    const stageSymbolTable = StageSymbolTable.getInstance();
+    const semanticModel = new SemanticModel();
+
+    for (let stage in stageSymbolTable.getStages()) {
+      const stageBuilder = stageSymbolTable.getStage(stage);
+      const finalStage = new Stage(
+        stageBuilder.getName(),
+        stageBuilder.getJobs(),
+        stageBuilder.getNeeds(),
+        stageBuilder.getRunsOn()
+      )
+      semanticModel.addStage(finalStage);
+    }
+
+    semanticModel.setTargets(targets);
+    semanticModel.setVariables(variables);
+    semanticModel.setTrigger(trigger);
+
+    return semanticModel;
+  }
 }
