@@ -12,7 +12,7 @@ pipeline:
         required: true
 
   triggers:
-    trigger-types:
+    trigger_types:
       - type: string
         required: true
     branches:

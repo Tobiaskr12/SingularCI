@@ -1,15 +1,24 @@
 export default class Targets {
-
-    constructor(
-      private targets: string[]
-    ){}
+    private acceptedTargets = [
+        "GitHub",
+        "GitLab",
+    ]
+    private targets: string[] = [];
 
     addTarget(target:string){
-        this.targets.push(target);
+        if (this.isTargetValid(target)){
+            this.targets.push(target);
+        } else {
+            // TODO: throw custom error
+            throw new Error(`${target} is not a valid target`);
+        }
     }
 
-    getTargets():string[]{
+    getTargets(): string[] {
         return this.targets;
     }
 
+    private isTargetValid(target: string): boolean{
+        return this.acceptedTargets.includes(target);
+    }
 }

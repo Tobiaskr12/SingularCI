@@ -1,23 +1,28 @@
-import Targets from "../SemanticModel/Targets";
-import Trigger from "../SemanticModel/Trigger";
-import Variables from "../SemanticModel/Variables";
+import { Triggers } from "../SemanticModel/Trigger";
 import Stage from "./Stage";
 
 export default class SemanticModel {    
-    private targets: Targets = new Targets([]);
-    private variables: Variables = new Variables({});
-    private trigger: Trigger = new Trigger([], []);
+    private targets: string[] = [];
+    private variables: Record<string, string> = {};
+    private trigger: Triggers;
     private stages: Stage[] = [];
 
-    setTargets(target: Targets) {
-        this.targets = target;
+    constructor() {
+        this.trigger = {
+            types: [],
+            branches: []
+        }
     }
 
-    setVariables(variables: Variables) {
+    setTargets(targets: string[]) {
+        this.targets = targets;
+    }
+
+    setVariables(variables: Record<string, string>) {
         this.variables = variables;
     }
 
-    setTrigger(trigger: Trigger) {
+    setTrigger(trigger: Triggers) {
         this.trigger = trigger;
     }
 
@@ -25,15 +30,15 @@ export default class SemanticModel {
         this.stages.push(stage);
     }
 
-    getTargets(): Targets {
+    getTargets(): string[] {
         return this.targets;
     }
 
-    getVariables(): Variables {
+    getVariables(): Record<string, string> {
         return this.variables;
     }
 
-    getTrigger(): Trigger {
+    getTrigger(): Triggers {
         return this.trigger;
     }
 

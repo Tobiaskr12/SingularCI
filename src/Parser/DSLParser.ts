@@ -9,16 +9,74 @@ import BuildDockerImage from './../SemanticModel/Tasks/BuildDockerImage';
 import Job, { JobSyntaxType } from '../Common/Job';
 import Stage, { StageSyntaxType } from '../Common/Stage';
 import SemanticModel from '../Common/SemanticModel';
+import Targets from './../SemanticModel/Targets';
+import Variables from './../SemanticModel/Variables';
+import Trigger, { Triggers } from '../SemanticModel/Trigger';
 
 const inputFile = fs.readFileSync(path.join(__dirname, '../testdsl.yml'), 'utf8');
 
 export default class DSLParser{
 
     parse(): SemanticModel {
+      const targets = this.buildTargets();
+      const triggers = this.buildTriggers();
+      const variables = this.buildVariables();
       const stages = this.buildStages();
       this.buildSymbolTable(stages);
 
-      return this.buildSemanticModel();
+      return this.buildSemanticModel(targets, variables, triggers);
+    }
+
+    private buildTargets(): string[] {
+      try {
+       const targetsArray = YAML.parse(inputFile)['pipeline']['targets']; 
+       const targets = new Targets();
+       
+       for (let target of targetsArray) {
+         targets.addTarget(target);
+       }
+
+       return targets.getTargets();
+      } catch (error: any) {
+        // TODO: throw custom error
+        throw new Error(error.message);
+      }
+    }
+    
+    private buildTriggers(): Triggers {
+      try {
+        const triggersArray = YAML.parse(inputFile)['pipeline']['triggers'];
+        const triggers = new Trigger();
+
+        for (let triggerTypes of triggersArray.trigger_types) {
+          triggers.addType(triggerTypes);
+        }
+
+        for (let triggerBranch of triggersArray.branches) {
+          triggers.addBranch(triggerBranch);
+        }
+        
+        return triggers.getTriggers();
+      } catch (error: any) {
+        // TODO: throw custom error
+        throw new Error(error.message);
+      }
+    }
+
+    private buildVariables(): Record<string, string> {
+      try {
+        const variablesArray = YAML.parse(inputFile)['pipeline']['variables'];
+        const variables = new Variables();
+
+        for (let variable of variablesArray) {
+          variables.addVariable(variable.key, variable.value);
+        }
+
+        return variables.getVariables();
+      } catch (error: any) {
+        // TODO: throw custom error
+        throw new Error(error.message);
+      }
     }
 
     private buildStages(): StageBuilder[]  {
@@ -32,6 +90,7 @@ export default class DSLParser{
 
         return stageList;
       } catch (error: any) {
+        // TODO: throw custom error
         throw new Error(error.message);
       }
     }
@@ -55,6 +114,7 @@ export default class DSLParser{
         this.populateJobs(stage, stageBuilder);
 
       } else {
+        // TODO: throw custom error
         throw new Error(`Stage is missing a name or runs_on property`);
       }
 
@@ -95,7 +155,7 @@ export default class DSLParser{
       }
     }
 
-    private buildSemanticModel(): SemanticModel {
+    private buildSemanticModel(targets: string[], variables: Record<string, string>, trigger: Triggers): SemanticModel {
       const stageSymbolTable = StageSymbolTable.getInstance();
       const semanticModel = new SemanticModel();
 
@@ -107,9 +167,12 @@ export default class DSLParser{
           stageBuilder.getNeeds(),
           stageBuilder.getRunsOn()
         )
-
         semanticModel.addStage(finalStage);
       }
+
+      semanticModel.setTargets(targets);
+      semanticModel.setVariables(variables);
+      semanticModel.setTrigger(trigger);
 
       return semanticModel;
     }

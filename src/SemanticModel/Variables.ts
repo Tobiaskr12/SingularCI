@@ -1,7 +1,5 @@
 export default class Variables {
-  constructor(
-    private variables: Record<string, string>
-  ){}
+  private variables: Record<string, string> = {};
 
   addVariable(key:string, value:string) {
       this.variables[key] = value;
