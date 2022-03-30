@@ -3,7 +3,7 @@ import Job from '../Common/Job'
 export default class StageBuilder {
     private name: string = "";
     private jobs: Job[] = [];
-    private predecessors: string[] = [];
+    private needs: string[] = [];
     private runs_on = "";
     
     setName(name: string){
@@ -22,14 +22,14 @@ export default class StageBuilder {
         return this.jobs;
     }
 
-    addPredecessor(stage: string) {
+    addNeeds(stage: string) {
         if (stage.length > 0) {
-            this.predecessors.push(stage);
+            this.needs.push(stage);
         }
     }
 
-    getPredecessors(): string[] {
-        return this.predecessors;
+    getNeeds(): string[] {
+        return this.needs;
     }
 
     setRunsOn(environment: string){

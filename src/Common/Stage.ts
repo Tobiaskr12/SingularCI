@@ -1,10 +1,17 @@
-import Job from './Job';
+import Job, { JobSyntaxType } from './Job';
+
+export type StageSyntaxType = {
+    name: string,
+    runs_on: string,
+    needs?: string,
+    job: JobSyntaxType[]
+}
 
 export default class Stage{
     constructor(
         private name: string,
         private jobs: Job[],
-        private predecessors: string[],
+        private needs: string[],
         private runs_on: string
         ){}
     getName(): string{
@@ -15,8 +22,8 @@ export default class Stage{
         return this.jobs;
     }
 
-    getPredecessors(): string[]{
-        return this.predecessors;
+    getNeeds(): string[]{
+        return this.needs;
     }
 
     getRunsOn(): string{

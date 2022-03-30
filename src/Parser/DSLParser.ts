@@ -3,12 +3,11 @@ import fs from 'fs';
 import path from 'path';
 import StageSymbolTable from './StageSymbolTable';
 import StageBuilder from './StageBuilder';
-import JobBuilder, { JobType } from './JobBuilder';
-import Task from '../Common/Task';
+import JobBuilder from './JobBuilder';
 import Run from '../SemanticModel/Tasks/Run';
 import BuildDockerImage from './../SemanticModel/Tasks/BuildDockerImage';
-import Job from '../Common/Job';
-import Stage from '../Common/Stage';
+import Job, { JobSyntaxType } from '../Common/Job';
+import Stage, { StageSyntaxType } from '../Common/Stage';
 import SemanticModel from '../Common/SemanticModel';
 
 const inputFile = fs.readFileSync(path.join(__dirname, '../testdsl.yml'), 'utf8');
@@ -16,46 +15,72 @@ const inputFile = fs.readFileSync(path.join(__dirname, '../testdsl.yml'), 'utf8'
 export default class DSLParser{
 
     parse(): SemanticModel {
-      this.populateSymbolTable();
+      const stages = this.buildStages();
+      this.buildSymbolTable(stages);
+
       return this.buildSemanticModel();
     }
 
-    private populateSymbolTable() {
-      const stageSymbolTable = StageSymbolTable.getInstance();
-      const stages = YAML.parse(inputFile)['pipeline']['stages'];
+    private buildStages(): StageBuilder[]  {
+      try {
+        const stages = YAML.parse(inputFile)['pipeline']['stages'];
+        const stageList: StageBuilder[] = [];
 
-      for(let stageObject of stages) {
-        const stageBuilder = new StageBuilder();
-        const stage = stageObject.stage;
-
-        if (stage.name && stage.runs_on && stage.job) {
-          stageBuilder.setName(stage.name);
-          stageBuilder.setRunsOn(stage.runs_on);
-
-          if (stage.needs) {
-            for (let needs of stage.needs) {
-              stageBuilder.addPredecessor(needs);
-            }
-          }
-          
-          for (let job of stage.job) {
-            const jobBuilder = new JobBuilder();
-            this.addTasksToJob(job, jobBuilder);
-
-            stageBuilder.addJob(
-              new Job(jobBuilder.getTasks())
-            );
-          }
-
-        } else {
-          throw new Error(`Stage is missing a name or runs_on property`);
+        for (let stageObject of stages) {
+          stageList.push(this.buildStage(stageObject.stage))
         }
 
-        stageSymbolTable.addStage(stageBuilder);
+        return stageList;
+      } catch (error: any) {
+        throw new Error(error.message);
+      }
+    }
+    
+    private buildSymbolTable(stages: StageBuilder[]) {
+      const stageSymbolTable = StageSymbolTable.getInstance();
+
+      for (let stage of stages) { 
+        stageSymbolTable.addStage(stage);
       }
     }
 
-    private addTasksToJob(job: JobType, jobBuilder: JobBuilder) {
+    private buildStage(stage: StageSyntaxType): StageBuilder {
+      const stageBuilder = new StageBuilder();
+
+      if (stage.name && stage.runs_on && stage.job) {
+        stageBuilder.setName(stage.name);
+        stageBuilder.setRunsOn(stage.runs_on);
+      
+        this.addNeedsToStage(stage, stageBuilder);
+        this.populateJobs(stage, stageBuilder);
+
+      } else {
+        throw new Error(`Stage is missing a name or runs_on property`);
+      }
+
+      return stageBuilder;
+    }
+
+    private addNeedsToStage(stage: StageSyntaxType, stageBuilder: StageBuilder) {
+      if (stage.needs) {
+        for (let need of stage.needs) {
+          stageBuilder.addNeeds(need);
+        }
+      }
+    }
+
+    private populateJobs(stage: StageSyntaxType, stageBuilder: StageBuilder) {
+      for (let job of stage.job) {
+        const jobBuilder = new JobBuilder();
+        this.addTasksToJob(job, jobBuilder);
+
+        stageBuilder.addJob(
+          new Job(jobBuilder.getTasks())
+        );
+      }
+    }
+
+    private addTasksToJob(job: JobSyntaxType, jobBuilder: JobBuilder) {
       if (job.run) {
         const run = new Run(job.run);
         jobBuilder.addTask(run);
@@ -79,7 +104,7 @@ export default class DSLParser{
         const finalStage = new Stage(
           stageBuilder.getName(),
           stageBuilder.getJobs(),
-          stageBuilder.getPredecessors(),
+          stageBuilder.getNeeds(),
           stageBuilder.getRunsOn()
         )
 
