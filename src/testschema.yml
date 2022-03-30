@@ -25,10 +25,10 @@ pipeline:
         name:
           type: string
           required: true
-        runs-on:
+        runs_on:
           type: string
           required: true
-        predecessors:
+        needs:
           - type: string
 
         job:
@@ -38,6 +38,8 @@ pipeline:
               required: true
             run:
               type: string
-            docker-build:
-              docker-file-path:
+            docker_build:
+              image_name:
+                type: string
+              docker_file_path:
                 type: string

@@ -1,12 +1,8 @@
 import Task from './Task';
 
 export default class Job{
-    constructor(private name: string, private tasks: Task[]){}
-    
-    getName():string{
-        return this.name;
-    }
-    
+    constructor(private tasks: Task[]){}
+
     getTasks():Task[]{
         return this.tasks;
     }

@@ -1,17 +1,21 @@
 import Task from "../Common/Task";
 
+export type JobType = {
+    run?: string;
+    docker_build?: {
+        image_name: string,
+        docker_file_path: string
+    };
+}
+
 export default class JobBuilder{
-   constructor(private name:string, private tasks:Task[]){
+    private tasks: Task[] = [];
 
-   } 
-
-   setName(name:string){
-       this.name = name;
-   }
-   getName():string{
-       return this.name;
-   }
-   addTask(task:Task){
+    addTask(task:Task) {
         this.tasks.push (task)
-   }
+    }
+
+    getTasks(): Task[] {
+        return this.tasks;
+    }
 }

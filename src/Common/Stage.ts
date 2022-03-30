@@ -4,22 +4,22 @@ export default class Stage{
     constructor(
         private name: string,
         private jobs: Job[],
-        private predecessors: Stage[],
+        private predecessors: string[],
         private runs_on: string
         ){}
-    getName():string{
+    getName(): string{
         return this.name;
     }
 
-    getJobs():Job[]{
+    getJobs(): Job[]{
         return this.jobs;
     }
 
-    getPredecessors():Stage[]{
+    getPredecessors(): string[]{
         return this.predecessors;
     }
 
-    getRunsOn():string{
+    getRunsOn(): string{
         return this.runs_on;
     }
 }

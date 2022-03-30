@@ -2,14 +2,14 @@ import StageBuilder from "./StageBuilder";
 
 export default class StageSymbolTable {
 
-  private instance: StageSymbolTable | undefined;
+  private static instance: StageSymbolTable | undefined;
   private stages: Record<string, StageBuilder>;
 
   constructor() {
     this.stages = {};
   }
 
-  getInstance (): StageSymbolTable {
+  static getInstance (): StageSymbolTable {
     if (!this.instance) {
       this.instance = new StageSymbolTable();
     }
@@ -17,15 +17,19 @@ export default class StageSymbolTable {
     return this.instance;
   }
 
-  addJob (stage: StageBuilder): void {
+  addStage (stage: StageBuilder): void {
     this.stages[stage.getName()] = stage;
   }
 
-  getJob (name: string): StageBuilder {
+  getStage (name: string): StageBuilder {
     if (this.stages[name]) {
       return this.stages[name];
     }
     
     throw new Error(`Stage ${name} not found`);
+  }
+
+  getStages (): Record<string, StageBuilder> {
+    return this.stages;
   }
 }
