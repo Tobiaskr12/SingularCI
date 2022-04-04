@@ -1,10 +1,11 @@
-import Job, { JobSyntaxType } from './Job';
+import Job from './Job';
+import { TaskSyntaxType } from './Task';
 
 export type StageSyntaxType = {
     name: string,
     runs_on: string,
     needs?: string,
-    job: JobSyntaxType[]
+    job: TaskSyntaxType[]
 }
 
 export default class Stage{

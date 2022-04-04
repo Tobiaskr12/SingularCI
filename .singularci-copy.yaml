@@ -23,7 +23,7 @@ pipeline:
         runs_on: ubuntu
         job:
           - name: checkout repo
-            run: this is a checkout command
+            run: this is a checkout command ${secrets.wakawaka-sdf}
           - name: build docker image for ${repo-name}
             docker_build:
               image_name: ubuntu

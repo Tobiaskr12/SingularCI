@@ -8,3 +8,12 @@
 export default interface Task {
 
 } 
+
+export type TaskSyntaxType = {
+    name: string;
+    run?: string;
+    docker_build?: {
+        image_name: string,
+        docker_file_path: string
+    };
+}

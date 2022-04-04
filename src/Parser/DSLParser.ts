@@ -6,34 +6,57 @@ import StageBuilder from './StageBuilder';
 import JobBuilder from './JobBuilder';
 import Run from '../SemanticModel/Tasks/Run';
 import BuildDockerImage from './../SemanticModel/Tasks/BuildDockerImage';
-import Job, { JobSyntaxType } from '../Common/Job';
+import Job from '../Common/Job';
 import Stage, { StageSyntaxType } from '../Common/Stage';
 import SemanticModel from '../Common/SemanticModel';
 import Targets from './../SemanticModel/Targets';
 import Variables from './../SemanticModel/Variables';
 import Trigger, { Triggers } from '../SemanticModel/Trigger';
+import { TaskSyntaxType } from '../Common/Task';
 
 export default class DSLParser{
 
-  private inputFile;
+  private inputFileClone;
 
   constructor(inputFileName: string) {
-    this.inputFile = fs.readFileSync(path.join(process.cwd(), inputFileName), 'utf8');;
+    let inputFilePath = path.join(process.cwd(), inputFileName);
+    let fileCloneName = '.singularci-copy.yaml';
+    let fileClonePath = path.join(process.cwd(), fileCloneName);
+    
+    fs.copyFileSync(inputFilePath, fileClonePath);
+    
+    this.inputFileClone = fs.readFileSync(fileClonePath, 'utf8');;
   }
 
   parse(): SemanticModel {
+    const variables = this.buildVariables();
+    this.resolveVariables(variables);
+    
     const targets = this.buildTargets();
     const triggers = this.buildTriggers();
-    const variables = this.buildVariables();
     const stages = this.buildStages();
+
     this.buildSymbolTable(stages);
 
     return this.buildSemanticModel(targets, variables, triggers);
   }
 
+  private resolveVariables(variables: Record<string, string>): void {
+    for (let variable in variables) {
+      this.inputFileClone = this.inputFileClone.replace("${" + variable + "}", variables[variable]);
+    }
+
+    // The regex tests if there are any undeclared variables in the file, which are not platform specific secrets
+    let undefinedVariables = this.inputFileClone.match(/\$\{(?!secrets\.)[^\n]+\}/gm);
+
+    if (undefinedVariables != null) {
+      throw new Error(`Error: The following variable(s) are used, but not declared: ${undefinedVariables}`);
+    }
+  }
+
   private buildTargets(): string[] {
     try {
-      const targetsArray = YAML.parse(this.inputFile)['pipeline']['targets']; 
+      const targetsArray = YAML.parse(this.inputFileClone)['pipeline']['targets']; 
       const targets = new Targets();
       
       for (let target of targetsArray) {
@@ -49,7 +72,7 @@ export default class DSLParser{
   
   private buildTriggers(): Triggers {
     try {
-      const triggersArray = YAML.parse(this.inputFile)['pipeline']['triggers'];
+      const triggersArray = YAML.parse(this.inputFileClone)['pipeline']['triggers'];
       const triggers = new Trigger();
 
       for (let triggerTypes of triggersArray.trigger_types) {
@@ -69,7 +92,7 @@ export default class DSLParser{
 
   private buildVariables(): Record<string, string> {
     try {
-      const variablesArray = YAML.parse(this.inputFile)['pipeline']['variables'];
+      const variablesArray = YAML.parse(this.inputFileClone)['pipeline']['variables'];
       const variables = new Variables();
 
       for (let variable of variablesArray) {
@@ -85,7 +108,7 @@ export default class DSLParser{
 
   private buildStages(): StageBuilder[]  {
     try {
-      const stages = YAML.parse(this.inputFile)['pipeline']['stages'];
+      const stages = YAML.parse(this.inputFileClone)['pipeline']['stages'];
       const stageList: StageBuilder[] = [];
 
       for (let stageObject of stages) {
@@ -144,16 +167,17 @@ export default class DSLParser{
     }
   }
 
-  private addTasksToJob(job: JobSyntaxType, jobBuilder: JobBuilder) {
-    if (job.run) {
-      const run = new Run(job.run);
+  private addTasksToJob(task: TaskSyntaxType, jobBuilder: JobBuilder) {
+    if (task.run) {
+      const run = new Run(task.name, task.run);
       jobBuilder.addTask(run);
     } 
     
-    if (job.docker_build) { 
+    if (task.docker_build) { 
       const docker_build = new BuildDockerImage(
-        job.docker_build.image_name,
-        job.docker_build.docker_file_path
+        task.name,
+        task.docker_build.image_name,
+        task.docker_build.docker_file_path
       )
       jobBuilder.addTask(docker_build);
     }
