@@ -47,7 +47,7 @@ export default class DSLParser{
     }
 
     // The regex tests if there are any undeclared variables in the file, which are not platform specific secrets
-    let undefinedVariables = this.inputFileClone.match(/\$\{(?!secrets\.)[^\n]+\}/gm);
+    let undefinedVariables = this.inputFileClone.match(/\$\{(?!secrets\.)[a-zA-Z][^{}]+\}/gm);
 
     if (undefinedVariables != null) {
       throw new Error(`Error: The following variable(s) are used, but not declared: ${undefinedVariables}`);
