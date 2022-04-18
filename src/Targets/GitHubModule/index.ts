@@ -146,7 +146,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
       name: stage.name,
       runs_on: stage.runs_on,
       needs: stage.needs,
-      job: this.buildJobs(stage.jobs)
+      steps: this.buildJobs(stage.jobs)
     };
 
     return stageObject;
@@ -183,5 +183,5 @@ type StageObject = {
   name: string,
   runs_on: string,
   needs?: string,
-  job: any[]
+  steps: any[]
 };
