@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: build
-    runs_on: ubuntu
+    runs_on: ubuntu-latest
     needs: []
     steps:
       - run: this is a checkout command ${{ secrets.wakawaka-name }} ${{
@@ -24,7 +24,7 @@ jobs:
           image: ubuntu
   test:
     name: test
-    runs_on: ubuntu
+    runs_on: ubuntu-latest
     needs: []
     steps:
       - run: this is a test command

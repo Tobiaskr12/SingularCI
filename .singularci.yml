@@ -21,7 +21,7 @@ pipeline:
   stages:
     - stage:
         name: build
-        runs_on: ubuntu
+        runs_on: ubuntu-latest
         job:
           - name: ${secrets.hakuna-matata}
             run: this is a checkout command ${secrets.wakawaka-name} ${secrets.wako-bako}
@@ -34,7 +34,7 @@ pipeline:
     
     - stage:
         name: test
-        runs_on: ubuntu
+        runs_on: ubuntu-latest
         job:
           - name: test
             run: this is a test command
