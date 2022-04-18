@@ -5,7 +5,8 @@ export default class PullDockerImage implements Task {
   constructor(
     private name: string,
     private imageName: string,
-    private userName: string
+    private userName: string,
+    private password: string,
   ) {}
 
   getName(): string {
@@ -18,6 +19,10 @@ export default class PullDockerImage implements Task {
 
   getUserName(): string {
     return this.userName;
+  }
+
+  getPassword(): string {
+    return this.password;
   }
   
 }

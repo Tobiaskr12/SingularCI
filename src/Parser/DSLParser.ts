@@ -177,7 +177,9 @@ export default class DSLParser{
       const docker_build = new BuildDockerImage(
         task.name,
         task.docker_build.image_name,
-        task.docker_build.docker_file_path
+        task.docker_build.docker_file_path,
+        task.docker_build.user_name,
+        task.docker_build.password  
       )
       jobBuilder.addTask(docker_build);
     }

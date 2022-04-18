@@ -4,6 +4,11 @@ import fs from 'fs';
 import path from 'path';
 import { TargetPlatformGenerator } from '../../Common/TargetPlatformGenerator';
 import util from 'util';
+import BuildDockerImage from '../../SemanticModel/Tasks/BuildDockerImage';
+import Checkout from '../../SemanticModel/Tasks/Checkout';
+import { generateBuildDockerImageTask, generateCheckoutTask, generatePullDockerImageTask, generateRunTask } from './tasks';
+import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
+import Run from '../../SemanticModel/Tasks/Run';
 
 export class GitHubConfigGenerator implements TargetPlatformGenerator {
   private semanticModel: SemanticModel;
@@ -23,7 +28,6 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
 
     this.buildTriggers();
     this.buildStages();
-    this.buildJobs();
     
     console.log(YAML.stringify(this.configObject));
     console.log(util.inspect(this.semanticModel, false, null, true /* enable colors */))
@@ -85,7 +89,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
       triggerObject.on.pull_request = pullRequestObject;
     }
 
-    this.configObject = triggerObject;
+    Object.assign(this.configObject, triggerObject);
   }
 
   private buildSecrets = () => {  
@@ -117,10 +121,67 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
   }
   
   private buildStages = () => {
-    
+    const StagesArray: any = {};
+
+    const stagesObject = {
+      jobs: StagesArray
+    };
+
+    for (let stage of this.semanticModel.getStages()) { 
+      const builtStage = this.buildStage(stage);
+      const stageId = this.generateStageId(builtStage.name);
+      stagesObject.jobs[stageId] = builtStage; 
+    }
+
+    Object.assign(this.configObject, stagesObject);
+  }
+
+  private generateStageId = (name: string): string => {
+    const str = "" + name;
+    return str.replace(' ', '_').toLowerCase();
   }
   
-  private buildJobs = () => {
-    
+  private buildStage = (stage: any): StageObject => {
+    const stageObject: StageObject = {
+      name: stage.name,
+      runs_on: stage.runs_on,
+      needs: stage.needs,
+      job: this.buildJobs(stage.jobs)
+    };
+
+    return stageObject;
+  }
+  
+  private buildJobs = (jobs: any) => {
+    const resultArr: any[] = []
+    for (let job of jobs) {
+      const tasks = job.getTasks();
+
+      for (let task of tasks) {
+        if (task instanceof BuildDockerImage) {
+          resultArr.push(generateBuildDockerImageTask(task));
+        }
+        
+        if (task instanceof Checkout) {
+          resultArr.push(generateCheckoutTask(task));
+        }
+        
+        if (task instanceof PullDockerImage) {
+          resultArr.push(generatePullDockerImageTask(task));
+        }
+        
+        if (task instanceof Run) {
+          resultArr.push(generateRunTask(task));
+        }
+      }
+    }
+    return resultArr;
   }
 }
+
+type StageObject = {
+  name: string,
+  runs_on: string,
+  needs?: string,
+  job: any[]
+};

@@ -14,6 +14,8 @@ export type TaskSyntaxType = {
     run?: string;
     docker_build?: {
         image_name: string,
-        docker_file_path: string
+        docker_file_path: string,
+        user_name: string,
+        password: string
     };
 }

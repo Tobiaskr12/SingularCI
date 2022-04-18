@@ -5,7 +5,9 @@ export default class BuildDockerImage implements Task {
   constructor(
     private name: string,
     private imageName: string,
-    private buildFilePath: string
+    private buildFilePath: string,
+    private userName: string,
+    private password: string,
   ) {}
 
   getName(): string {
@@ -18,6 +20,14 @@ export default class BuildDockerImage implements Task {
 
   getBuildFilePath(): string {
     return this.buildFilePath;
+  }
+  
+  getUserName(): string {
+    return this.userName;
+  }
+
+  getPassword(): string {
+    return this.password;
   }
 
 }

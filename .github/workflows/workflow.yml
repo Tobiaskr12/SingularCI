@@ -7,3 +7,24 @@ on:
     branches:
       - master
       - main
+jobs:
+  build:
+    name: build
+    runs_on: ubuntu
+    needs: []
+    job:
+      - run: this is a checkout command ${{ secrets.wakawaka-name }} ${{
+          secrets.wako-bako }}
+      - name: build docker image for ${{ secrets.repo-asdfjasdf }}
+        uses: djbender/docker-buildx-pull-or-build@v0.5
+        with:
+          docker_username: WakawakaImmaDocker
+          docker_password: ${{secrets.docker-password}}
+          dockerfile: ./Dockerfile
+          image: ubuntu
+  test:
+    name: test
+    runs_on: ubuntu
+    needs: []
+    job:
+      - run: this is a test command

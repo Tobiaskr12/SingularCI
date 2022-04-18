@@ -7,6 +7,8 @@ pipeline:
       value: ${secrets.repo-asdfjasdf}
     - key: wakawaka-name
       value: secrets.wakawaka-name
+    - key: docker-username
+      value: WakawakaImmaDocker
 
   triggers: 
     trigger_types:
@@ -27,6 +29,8 @@ pipeline:
             docker_build:
               image_name: ubuntu
               docker_file_path: ./Dockerfile 
+              user_name: ${docker-username}
+              password: ${{secrets.docker-password}}
     
     - stage:
         name: test
