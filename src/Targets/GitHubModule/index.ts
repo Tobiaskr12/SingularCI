@@ -144,7 +144,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
   private buildStage = (stage: any): StageObject => {
     const stageObject: StageObject = {
       name: stage.name,
-      runs_on: stage.runs_on,
+      'runs-on': stage.runs_on,
       needs: stage.needs,
       steps: this.buildJobs(stage.jobs)
     };
@@ -181,7 +181,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
 
 type StageObject = {
   name: string,
-  runs_on: string,
+  'runs-on': string,
   needs?: string,
   steps: any[]
 };
