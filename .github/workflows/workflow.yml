@@ -8,6 +8,11 @@ on:
       - master
       - main
 jobs:
+  lintstage:
+    runs-on: windows-latest
+    steps:
+      - name: Lint
+        run: lint_this_project.exe
   build:
     runs-on: ubuntu-latest
     steps:
@@ -26,5 +31,5 @@ jobs:
       - name: Unit test
         run: npm test
     needs:
+      - lint
       - build
-      - fakestage

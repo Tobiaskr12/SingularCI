@@ -17,6 +17,14 @@ pipeline:
       - main
   
   stages:
+
+    - stage:
+        name: LintStage
+        runs_on: windows-latest
+        job:
+          - name: Lint
+            run: lint_this_project.exe
+
     - stage:
         name: build
         runs_on: ubuntu-latest
@@ -32,7 +40,7 @@ pipeline:
     
     - stage:
         name: test
-        needs: [build, fakestage]
+        needs: [lint, build]
         runs_on: ubuntu-latest
         job:
           - name: Unit test
