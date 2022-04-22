@@ -5,6 +5,7 @@ import Run from '../../SemanticModel/Tasks/Run';
 
 export const generateCheckoutTask = (task: Checkout) => {
   return {
+    name: task.getName(),
     uses: '@actions/checkout@v3',
     with: {
       repository: task.getRepositoryURL()
@@ -14,6 +15,7 @@ export const generateCheckoutTask = (task: Checkout) => {
 
 export const generateRunTask = (task: Run) => {
   return {
+    name: task.getName(),
     run: task.getCommand()
   }
 }

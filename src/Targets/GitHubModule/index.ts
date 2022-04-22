@@ -129,7 +129,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
 
     for (let stage of this.semanticModel.getStages()) { 
       const builtStage = this.buildStage(stage);
-      const stageId = this.generateStageId(builtStage.name);
+      const stageId = this.generateStageId(stage.getName());
       stagesObject.jobs[stageId] = builtStage; 
     }
 
@@ -143,10 +143,12 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
   
   private buildStage = (stage: any): StageObject => {
     const stageObject: StageObject = {
-      name: stage.name,
       'runs-on': stage.runs_on,
-      needs: stage.needs,
       steps: this.buildJobs(stage.jobs)
+    };
+
+    if (stage.needs.length > 0) {
+      stageObject.needs = stage.needs;
     };
 
     return stageObject;
@@ -180,7 +182,6 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
 }
 
 type StageObject = {
-  name: string,
   'runs-on': string,
   needs?: string,
   steps: any[]

@@ -9,22 +9,22 @@ on:
       - main
 jobs:
   build:
-    name: build
     runs-on: ubuntu-latest
-    needs: []
     steps:
-      - run: this is a checkout command ${{ secrets.wakawaka-name }} ${{
-          secrets.wako-bako }}
-      - name: build docker image for ${{ secrets.repo-asdfjasdf }}
+      - name: Checkout
+        run: this_is_a_checkout_command.sh
+      - name: build docker image for ${{ secrets.super-secret-repo-name }}
         uses: djbender/docker-buildx-pull-or-build@v0.5
         with:
-          docker_username: WakawakaImmaDocker
-          docker_password: ${{secrets.docker-password}}
+          docker_username: GenericDockerUserName
+          docker_password: ${{ secrets.docker-password }}
           dockerfile: ./Dockerfile
           image: ubuntu
   test:
-    name: test
     runs-on: ubuntu-latest
-    needs: []
     steps:
-      - run: this is a test command
+      - name: Unit test
+        run: npm test
+    needs:
+      - build
+      - fakestage

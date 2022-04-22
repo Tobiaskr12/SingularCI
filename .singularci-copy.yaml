@@ -4,11 +4,9 @@ pipeline:
 
   variables:
     - key: repo-name
-      value: ${secrets.repo-asdfjasdf}
-    - key: wakawaka-name
-      value: secrets.wakawaka-name
+      value: ${secrets.super-secret-repo-name}
     - key: docker-username
-      value: WakawakaImmaDocker
+      value: GenericDockerUserName
 
   triggers: 
     trigger_types:
@@ -23,18 +21,19 @@ pipeline:
         name: build
         runs_on: ubuntu-latest
         job:
-          - name: ${secrets.hakuna-matata}
-            run: this is a checkout command ${secrets.wakawaka-name} ${secrets.wako-bako}
+          - name: Checkout
+            run: this_is_a_checkout_command.sh
           - name: build docker image for ${repo-name}
             docker_build:
               image_name: ubuntu
               docker_file_path: ./Dockerfile 
               user_name: ${docker-username}
-              password: ${{secrets.docker-password}}
+              password: ${secrets.docker-password}
     
     - stage:
         name: test
+        needs: [build, fakestage]
         runs_on: ubuntu-latest
         job:
-          - name: test
-            run: this is a test command
+          - name: Unit test
+            run: npm test
