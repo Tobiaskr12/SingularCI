@@ -31,5 +31,5 @@ jobs:
       - name: Unit test
         run: npm test
     needs:
-      - lint
+      - lintstage
       - build
