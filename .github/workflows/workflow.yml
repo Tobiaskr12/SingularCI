@@ -9,15 +9,16 @@ on:
       - main
 jobs:
   lintstage:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - run: |
-          lint_this_project.exe
-          this_is_the_second_command.exe
+          apt install nodejs
+          npm install
+          npm run lint
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: this_is_a_checkout_command.sh
+      - run: echo "ANOTHER GREAT SUCCESS"
       - uses: djbender/docker-buildx-pull-or-build@v0.5
         with:
           docker_username: GenericDockerUserName
@@ -27,7 +28,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - run: npm test
+      - run: |
+          npm install
+          npm test
     needs:
       - lintstage
       - build

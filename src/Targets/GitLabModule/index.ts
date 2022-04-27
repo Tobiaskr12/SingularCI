@@ -137,6 +137,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
         
         const jobObject: { 
           [key: string]: {
+            image: string,
             stage: string,
             script: string[],
             needs: string[],
@@ -145,6 +146,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
           }
         } = {
           [`${stages[i].getName()}-job-${j + 1}`]: {
+            image: this.getSelectedImage(this.semanticModel.getStages()[i]),
             stage: this.semanticModel.getStages()[i].getName(),
             script: tasksArray,
             needs: needsArray
@@ -190,6 +192,18 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
       
         Object.assign(this.configObject, jobObject);
       }
+    }
+  }
+
+  getSelectedImage(stage: Stage): string {
+    const runsOn = stage.getRunsOn();
+
+    if (runsOn === 'ubuntu-latest') {
+      return 'ubuntu:latest';
+    } else if (runsOn === 'windows-latest') {
+      return 'windows:20H2';
+    } else {
+      throw new Error(`The specified image ${stage.setRunsOn} does not exist`)
     }
   }
 

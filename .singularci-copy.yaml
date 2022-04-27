@@ -21,20 +21,20 @@ pipeline:
 
     - stage:
         name: lintstage
-        runs_on: windows-latest
+        runs_on: ubuntu-latest
         jobs:
           - name: Lint
             run: 
-              - lint_this_project.exe
-              - this_is_the_second_command.exe
-
+              - apt install nodejs
+              - npm install
+              - npm run lint
     - stage:
         name: build
         runs_on: ubuntu-latest
         jobs:
           - name: Checkout
             run: 
-              - this_is_a_checkout_command.sh
+              - echo "ANOTHER GREAT SUCCESS"
           - name: build docker image for ${repo-name}
             docker_build:
               image_name: ubuntu
@@ -49,5 +49,6 @@ pipeline:
         jobs:
           - name: Unit test
             run: 
+              - npm install
               - npm test
             
