@@ -1,0 +1,37 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+stages:
+  - lintstage
+  - build
+  - test
+lintstage-job-1:
+  stage: lintstage
+  script:
+    - lint_this_project.exe
+    - this_is_the_second_command.exe
+  needs: []
+build-job-1:
+  stage: build
+  script:
+    - this_is_a_checkout_command.sh
+  needs: []
+build-job-2:
+  stage: build
+  script:
+    - docker login -u GenericDockerUserName -p $docker-password}
+    - docker build -t ubuntu ./Dockerfile
+    - docker push GenericDockerUserName/ubuntu
+  needs: []
+  services:
+    - docker:dind
+test-job-1:
+  stage: test
+  script:
+    - npm test
+  needs:
+    - lintstage
+    - build
