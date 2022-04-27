@@ -22,7 +22,7 @@ export const dockerSetup = (stage: Stage, task: BuildDockerImage) => {
 export const generateBuildDockerImageTask = (task: BuildDockerImage) => {
   const commandArray: string[] = [];
 
-  commandArray.push(`docker login -u ${task.getUserName()} -p ${task.getPassword()}}`);
+  commandArray.push(`docker login -u ${task.getUserName()} -p ${task.getPassword()}`);
   commandArray.push(`docker build -t ${task.getImageName()} ${task.getBuildFilePath()}`);
   commandArray.push(`docker push ${task.getUserName()}/${task.getImageName()}`);
   
@@ -31,7 +31,7 @@ export const generateBuildDockerImageTask = (task: BuildDockerImage) => {
 
 export const generatePullDockerImageTask = (task: PullDockerImage) => {
   const commandArray: string[] = [];
-  commandArray.push(`docker login -u ${task.getUserName()} -p ${task.getPassword()}}`);
+  commandArray.push(`docker login -u ${task.getUserName()} -p ${task.getPassword()}`);
   commandArray.push(`docker pull ${task.getImageName()}` )
   return commandArray;
 }
