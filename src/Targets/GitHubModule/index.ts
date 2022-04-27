@@ -3,7 +3,6 @@ import SemanticModel from './../../Common/SemanticModel';
 import fs from 'fs';
 import path from 'path';
 import { TargetPlatformGenerator } from '../../Common/TargetPlatformGenerator';
-import util from 'util';
 import BuildDockerImage from '../../SemanticModel/Tasks/BuildDockerImage';
 import Checkout from '../../SemanticModel/Tasks/Checkout';
 import { generateBuildDockerImageTask, generateCheckoutTask, generatePullDockerImageTask, generateRunTask } from './tasks';
@@ -28,9 +27,6 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
 
     this.buildTriggers();
     this.buildStages();
-    
-    console.log(YAML.stringify(this.configObject));
-    console.log(util.inspect(this.semanticModel, false, null, true /* enable colors */))
 
     fs.writeFileSync(
       path.join(
@@ -59,10 +55,6 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
   private buildTriggers = () => {
     const isPushSet = this.semanticModel.getTrigger().types.includes('push');
     const isPullRequestSet = this.semanticModel.getTrigger().types.includes('pull_request');
-
-    type TriggerType = {
-      branches: string[]
-    }
 
     const onObject: {
       push?: TriggerType,
@@ -180,9 +172,3 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
     return resultArr;
   }
 }
-
-type StageObject = {
-  'runs-on': string,
-  needs?: string,
-  steps: any[]
-};

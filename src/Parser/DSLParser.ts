@@ -6,13 +6,12 @@ import StageBuilder from './StageBuilder';
 import JobBuilder from './JobBuilder';
 import Run from '../SemanticModel/Tasks/Run';
 import BuildDockerImage from './../SemanticModel/Tasks/BuildDockerImage';
-import Job from '../Common/Job';
+import Job, { JobSyntaxType } from '../Common/Job';
 import Stage, { StageSyntaxType } from '../Common/Stage';
 import SemanticModel from '../Common/SemanticModel';
 import Targets from './../SemanticModel/Targets';
 import Variables from './../SemanticModel/Variables';
 import Trigger, { Triggers } from '../SemanticModel/Trigger';
-import { TaskSyntaxType } from '../Common/Task';
 
 export default class DSLParser{
 
@@ -132,18 +131,22 @@ export default class DSLParser{
 
   private buildStage(stage: StageSyntaxType): StageBuilder {
     const stageBuilder = new StageBuilder();
-
-    if (stage.name && stage.runs_on && stage.job) {
-      stageBuilder.setName(stage.name);
-      stageBuilder.setRunsOn(stage.runs_on);
-    
-      this.addNeedsToStage(stage, stageBuilder);
-      this.populateJobs(stage, stageBuilder);
-
-    } else {
-      // TODO: throw custom error
-      throw new Error(`Stage is missing a name or runs_on property`);
+    try {
+      if (stage.name && stage.runs_on && stage.jobs) {
+        stageBuilder.setName(stage.name);
+        stageBuilder.setRunsOn(stage.runs_on);
+      
+        this.addNeedsToStage(stage, stageBuilder);
+        this.populateJobs(stage, stageBuilder);
+  
+      } else {
+        // TODO: throw custom error
+        throw new Error(`Stage is missing a name or runs_on property`);
+      }
+    } catch (error: any) {
+      console.error(error.message);
     }
+
 
     return stageBuilder;
   }
@@ -157,29 +160,30 @@ export default class DSLParser{
   }
 
   private populateJobs(stage: StageSyntaxType, stageBuilder: StageBuilder) {
-    for (let job of stage.job) {
+    for (let job of stage.jobs) {
       const jobBuilder = new JobBuilder();
+
+      jobBuilder.setName(job.name);
       this.addTasksToJob(job, jobBuilder);
 
       stageBuilder.addJob(
-        new Job(jobBuilder.getTasks())
+        new Job(jobBuilder.getName(), jobBuilder.getTasks())
       );
     }
   }
 
-  private addTasksToJob(task: TaskSyntaxType, jobBuilder: JobBuilder) {
-    if (task.run) {
-      const run = new Run(task.name, task.run);
+  private addTasksToJob(job: JobSyntaxType, jobBuilder: JobBuilder) {
+    if (job.run) {
+      const run = new Run(job.run);
       jobBuilder.addTask(run);
     } 
     
-    if (task.docker_build) { 
+    if (job.docker_build) { 
       const docker_build = new BuildDockerImage(
-        task.name,
-        task.docker_build.image_name,
-        task.docker_build.docker_file_path,
-        task.docker_build.user_name,
-        task.docker_build.password  
+        job.docker_build.image_name,
+        job.docker_build.docker_file_path,
+        job.docker_build.user_name,
+        job.docker_build.password  
       )
       jobBuilder.addTask(docker_build);
     }

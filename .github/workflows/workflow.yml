@@ -11,15 +11,14 @@ jobs:
   lintstage:
     runs-on: windows-latest
     steps:
-      - name: Lint
-        run: lint_this_project.exe
+      - run: |
+          lint_this_project.exe
+          this_is_the_second_command.exe
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        run: this_is_a_checkout_command.sh
-      - name: build docker image for ${{ secrets.super-secret-repo-name }}
-        uses: djbender/docker-buildx-pull-or-build@v0.5
+      - run: this_is_a_checkout_command.sh
+      - uses: djbender/docker-buildx-pull-or-build@v0.5
         with:
           docker_username: GenericDockerUserName
           docker_password: ${{ secrets.docker-password }}
@@ -28,8 +27,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Unit test
-        run: npm test
+      - run: npm test
     needs:
       - lintstage
       - build

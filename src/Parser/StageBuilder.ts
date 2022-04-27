@@ -32,7 +32,11 @@ export default class StageBuilder {
         return this.needs;
     }
 
-    setRunsOn(environment: string){
+    setRunsOn(environment: string) {
+        if (environment != "ubuntu-latest" && environment != "windows-latest") {
+            throw new Error(`Invalid runs_on environment: '${environment}' - Please use 'ubuntu-latest' or 'windows-latest'`);
+        }
+
         this.runs_on = environment;
     }
 

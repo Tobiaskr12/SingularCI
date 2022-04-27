@@ -1,6 +1,7 @@
 pipeline:
   targets:
     - GitHub
+    - GitLab
 
   variables:
     - key: repo-name
@@ -21,16 +22,19 @@ pipeline:
     - stage:
         name: lintstage
         runs_on: windows-latest
-        job:
+        jobs:
           - name: Lint
-            run: lint_this_project.exe
+            run: 
+              - lint_this_project.exe
+              - this_is_the_second_command.exe
 
     - stage:
         name: build
         runs_on: ubuntu-latest
-        job:
+        jobs:
           - name: Checkout
-            run: this_is_a_checkout_command.sh
+            run: 
+              - this_is_a_checkout_command.sh
           - name: build docker image for ${repo-name}
             docker_build:
               image_name: ubuntu
@@ -42,7 +46,8 @@ pipeline:
         name: test
         needs: [lintstage, build]
         runs_on: ubuntu-latest
-        job:
+        jobs:
           - name: Unit test
-            run: npm test
+            run: 
+              - npm test
             

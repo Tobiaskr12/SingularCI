@@ -5,7 +5,6 @@ import Run from '../../SemanticModel/Tasks/Run';
 
 export const generateCheckoutTask = (task: Checkout) => {
   return {
-    name: task.getName(),
     uses: '@actions/checkout@v3',
     with: {
       repository: task.getRepositoryURL()
@@ -14,15 +13,23 @@ export const generateCheckoutTask = (task: Checkout) => {
 }
 
 export const generateRunTask = (task: Run) => {
+  let runCommand = "";
+
+  if (task.getCommands().length == 1) { 
+    runCommand = task.getCommands()[0];
+  } else if (task.getCommands().length > 1) { 
+    for (let i = 0; i < task.getCommands().length; i++) {
+      runCommand += `${task.getCommands()[i]}\n`;
+    }
+  }
+
   return {
-    name: task.getName(),
-    run: task.getCommand()
+    run: runCommand
   }
 }
 
 export const generateBuildDockerImageTask = (task: BuildDockerImage) => {
   return {
-    name: task.getName(),
     uses: "djbender/docker-buildx-pull-or-build@v0.5",
     with: {
       docker_username: task.getUserName(),
@@ -35,7 +42,6 @@ export const generateBuildDockerImageTask = (task: BuildDockerImage) => {
 
 export const generatePullDockerImageTask = (task: PullDockerImage) => { 
   return {
-    name: task.getName(),
     uses: "djbender/docker-buildx-pull-or-build@v0.5",
     with: {
       docker_username: task.getUserName(),

@@ -45,4 +45,8 @@ export default class SemanticModel {
     getStages(): Stage[] {
         return this.stages;
     }
+
+    setStages(stages: Stage[]) {
+        this.stages = stages;
+    }
 }
