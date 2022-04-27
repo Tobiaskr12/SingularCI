@@ -1,5 +1,5 @@
 default:
-  image: ubuntu-latest
+  image: ubuntu:latest
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
