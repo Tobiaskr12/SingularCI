@@ -12,8 +12,8 @@ lintstage-job-1:
   image: ubuntu:latest
   stage: lintstage
   script:
-    - apt-get update
-    - apt-get install nodejs
+    - apt-get update -y
+    - apt-get install -y nodejs npm
     - npm install
     - npm run lint
   needs: []
