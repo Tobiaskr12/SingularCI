@@ -33,5 +33,6 @@ test-job-1:
   script:
     - npm test
   needs:
-    - lintstage
-    - build
+    - lintstage-job-1
+    - build-job-1
+    - build-job-2

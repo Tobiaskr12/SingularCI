@@ -135,8 +135,6 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
         const needsArray: string[] = [];
         const beforeTasks: any[] = [];
         
-        
-
         const jobObject: { 
           [key: string]: {
             stage: string,
@@ -154,7 +152,17 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
         };
 
         for (let k = 0; k < stages[i].getNeeds().length; k++) {
-          needsArray.push(stages[i].getNeeds()[k]);
+          const needsName: string = stages[i].getNeeds()[k];
+          const neededStage = this.semanticModel.getStages().find(stage => stage.getName() === needsName);
+
+          if (neededStage) { 
+            const jobAmount = neededStage.getJobs().length;
+
+            for (let l = 0; l < jobAmount; l++) {
+              const jobName = `${neededStage.getName()}-job-${l + 1}`;
+              needsArray.push(jobName);
+            }
+          }
         }
 
         for (let task of tasks) {
