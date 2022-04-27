@@ -25,7 +25,8 @@ pipeline:
         jobs:
           - name: Lint
             run: 
-              - apt install nodejs
+              - apt-get update
+              - apt-get install nodejs
               - npm install
               - npm run lint
     - stage:
