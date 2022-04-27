@@ -172,7 +172,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
           }
           
           if (task instanceof PullDockerImage) {
-            tasksArray.push(generatePullDockerImageTask(task));
+            tasksArray.push(...generatePullDockerImageTask(task));
           }
 
           if (task instanceof Run) {
