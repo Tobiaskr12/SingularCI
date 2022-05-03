@@ -12,12 +12,14 @@ import SemanticModel from '../Common/SemanticModel';
 import Targets from './../SemanticModel/Targets';
 import Variables from './../SemanticModel/Variables';
 import Trigger, { Triggers } from '../SemanticModel/Trigger';
+import { Inject, Service } from 'typedi';
 
-export default class DSLParser{
+@Service({ id: 'dslparser', global: true })
+class DSLParser{
 
   private inputFileClone;
 
-  constructor(inputFileName: string) {
+  constructor(@Inject('dslparser.inputFileName') inputFileName: string) {
     let inputFilePath = path.join(process.cwd(), inputFileName);
     let fileCloneName = '.singularci-copy.yaml';
     let fileClonePath = path.join(process.cwd(), fileCloneName);
@@ -211,3 +213,5 @@ export default class DSLParser{
     return semanticModel;
   }
 }
+
+export default DSLParser;
