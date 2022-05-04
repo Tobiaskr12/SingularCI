@@ -13,20 +13,31 @@ import Targets from './../SemanticModel/Targets';
 import Variables from './../SemanticModel/Variables';
 import Trigger, { Triggers } from '../SemanticModel/Trigger';
 import { Inject, Service } from 'typedi';
+import { JobBuilderFactory } from './JobBuilderFactory';
+import PullDockerImage from '../SemanticModel/Tasks/PullDockerImage';
+import Checkout from '../SemanticModel/Tasks/Checkout';
 
-@Service({ id: 'dslparser', global: true })
+@Service({ id: 'dslparser' })
 class DSLParser{
 
   private inputFileClone;
+  private semanticModel;
+  private jobBuilderFactory;
 
-  constructor(@Inject('dslparser.inputFileName') inputFileName: string) {
+  constructor(
+    @Inject('dslparser.inputFileName') inputFileName: string,
+    @Inject('SemanticModel') semanticModel: SemanticModel,
+    @Inject('JobBuilderFactory') jobBuilderFactory: JobBuilderFactory
+  ) {
     let inputFilePath = path.join(process.cwd(), inputFileName);
     let fileCloneName = '.singularci-copy.yaml';
     let fileClonePath = path.join(process.cwd(), fileCloneName);
     
     fs.copyFileSync(inputFilePath, fileClonePath);
     
-    this.inputFileClone = fs.readFileSync(fileClonePath, 'utf8');;
+    this.inputFileClone = fs.readFileSync(fileClonePath, 'utf8');
+    this.semanticModel = semanticModel;
+    this.jobBuilderFactory = jobBuilderFactory;
   }
 
   parse(): SemanticModel {
@@ -163,7 +174,7 @@ class DSLParser{
 
   private populateJobs(stage: StageSyntaxType, stageBuilder: StageBuilder) {
     for (let job of stage.jobs) {
-      const jobBuilder = new JobBuilder();
+      const jobBuilder = this.jobBuilderFactory.createJobBuilder();
 
       jobBuilder.setName(job.name);
       this.addTasksToJob(job, jobBuilder);
@@ -189,11 +200,27 @@ class DSLParser{
       )
       jobBuilder.addTask(docker_build);
     }
+
+    if (job.docker_pull) { 
+      const docker_pull = new PullDockerImage(
+        job.docker_pull.user_name,
+        job.docker_pull.password,  
+        job.docker_pull.image_name
+      )
+      jobBuilder.addTask(docker_pull);
+    }
+
+    if (job.checkout) {
+      const checkout = new Checkout(
+        job.checkout.repo_url
+      );
+
+      jobBuilder.addTask(checkout);
+    }
   }
 
   private buildSemanticModel(targets: string[], variables: Record<string, string>, trigger: Triggers): SemanticModel {
     const stageSymbolTable = StageSymbolTable.getInstance();
-    const semanticModel = new SemanticModel();
 
     for (let stage in stageSymbolTable.getStages()) {
       const stageBuilder = stageSymbolTable.getStage(stage);
@@ -203,14 +230,14 @@ class DSLParser{
         stageBuilder.getNeeds(),
         stageBuilder.getRunsOn()
       )
-      semanticModel.addStage(finalStage);
+      this.semanticModel.addStage(finalStage);
     }
 
-    semanticModel.setTargets(targets);
-    semanticModel.setVariables(variables);
-    semanticModel.setTrigger(trigger);
+    this.semanticModel.setTargets(targets);
+    this.semanticModel.setVariables(variables);
+    this.semanticModel.setTrigger(trigger);
 
-    return semanticModel;
+    return this.semanticModel;
   }
 }
 

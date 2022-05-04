@@ -203,7 +203,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
     } else if (runsOn === 'windows-latest') {
       return 'windows:20H2';
     } else {
-      throw new Error(`The specified image ${stage.setRunsOn} does not exist`)
+      throw new Error(`The specified image ${stage.getRunsOn()} does not exist`)
     }
   }
 

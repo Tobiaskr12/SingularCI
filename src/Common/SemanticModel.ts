@@ -1,6 +1,8 @@
+import { Service } from "typedi";
 import { Triggers } from "../SemanticModel/Trigger";
 import Stage from "./Stage";
 
+@Service({ id: 'SemanticModel' })
 export default class SemanticModel {    
     private targets: string[] = [];
     private variables: Record<string, string> = {};

@@ -21,4 +21,12 @@ export type JobSyntaxType = {
         user_name: string,
         password: string
     };
+    docker_pull?: {
+        user_name: string,
+        password: string,
+        image_name: string
+    },
+    checkout?: {
+        repo_url: string,
+    }
 }

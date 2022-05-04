@@ -1,5 +1,7 @@
+import { Service } from "typedi";
 import Task from "../Common/Task";
 
+@Service({ id: 'JobBuilder' })
 export default class JobBuilder{
     private tasks: Task[] = [];
     private name: string = "";
