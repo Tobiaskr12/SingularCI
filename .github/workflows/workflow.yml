@@ -25,7 +25,7 @@ jobs:
           docker_username: GenericDockerUserName
           docker_password: ${{ secrets.docker-password }}
           dockerfile: ./Dockerfile
-          image: ubuntu
+          image: SingularCI_TestingImage
   test:
     runs-on: ubuntu-latest
     steps:
@@ -35,3 +35,12 @@ jobs:
     needs:
       - lintstage
       - build
+  pull_image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: djbender/docker-buildx-pull-or-build@v0.5
+        with:
+          docker_username: GenericDockerUserName
+          docker_password: ${{ secrets.docker-password }}
+          dockerfile: ""
+          image: GenericDockerUserName/SingularCI_TestingImage

@@ -1,6 +1,5 @@
 import YAML from 'yaml';
 import SemanticModel from './../../Common/SemanticModel';
-import util from 'util';
 import { TargetPlatformGenerator } from './../../Common/TargetPlatformGenerator';
 import fs from 'fs';
 import path from 'path';
@@ -9,7 +8,7 @@ import BuildDockerImage from '../../SemanticModel/Tasks/BuildDockerImage';
 import Checkout from '../../SemanticModel/Tasks/Checkout';
 import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
 import Run from '../../SemanticModel/Tasks/Run';
-import { dockerSetup, generateBuildDockerImageTask, generateCheckoutTask, generatePullDockerImageTask, generateRunTask } from './tasks';
+import { dockerSetup, generateBuildDockerImageTask, generatePullDockerImageTask, generateRunTask } from './tasks';
 
 export class GitLabConfigGenerator implements TargetPlatformGenerator {
   private semanticModel: SemanticModel;

@@ -46,6 +46,7 @@ export const generatePullDockerImageTask = (task: PullDockerImage) => {
     with: {
       docker_username: task.getUserName(),
       docker_password: task.getPassword(),
+      // will pull if dockerfile path is left empty
       dockerfile: "",
       image: task.getImageName()
     }

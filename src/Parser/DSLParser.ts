@@ -21,6 +21,7 @@ import Checkout from '../SemanticModel/Tasks/Checkout';
 class DSLParser{
 
   private inputFileClone;
+  private fileClonePath;
   private semanticModel;
   private jobBuilderFactory;
 
@@ -30,12 +31,12 @@ class DSLParser{
     @Inject('JobBuilderFactory') jobBuilderFactory: JobBuilderFactory
   ) {
     let inputFilePath = path.join(process.cwd(), inputFileName);
-    let fileCloneName = '.singularci-copy.yaml';
-    let fileClonePath = path.join(process.cwd(), fileCloneName);
+    let fileCloneName = '.singularci-copy.yml';
+    this.fileClonePath = path.join(process.cwd(), fileCloneName);
     
-    fs.copyFileSync(inputFilePath, fileClonePath);
+    fs.copyFileSync(inputFilePath, this.fileClonePath);
     
-    this.inputFileClone = fs.readFileSync(fileClonePath, 'utf8');
+    this.inputFileClone = fs.readFileSync(this.fileClonePath, 'utf8');
     this.semanticModel = semanticModel;
     this.jobBuilderFactory = jobBuilderFactory;
   }
@@ -55,7 +56,7 @@ class DSLParser{
 
   private resolveVariables(variables: Record<string, string>): void {
     for (let variable in variables) {
-      this.inputFileClone = this.inputFileClone.replace("${" + variable + "}", variables[variable]);
+      this.inputFileClone = this.inputFileClone.replaceAll("${" + variable + "}", variables[variable]);
     }
 
     // The regex tests if there are any undeclared variables in the file, which are not platform specific secrets
@@ -203,9 +204,9 @@ class DSLParser{
 
     if (job.docker_pull) { 
       const docker_pull = new PullDockerImage(
+        job.docker_pull.image_name,
         job.docker_pull.user_name,
-        job.docker_pull.password,  
-        job.docker_pull.image_name
+        job.docker_pull.password
       )
       jobBuilder.addTask(docker_pull);
     }

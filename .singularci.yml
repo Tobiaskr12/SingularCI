@@ -8,6 +8,8 @@ pipeline:
       value: ${secrets.super-secret-repo-name}
     - key: docker-username
       value: GenericDockerUserName
+    - key: image_name
+      value: SingularCI_TestingImage
 
   triggers: 
     trigger_types:
@@ -38,7 +40,7 @@ pipeline:
               - echo "ANOTHER GREAT SUCCESS"
           - name: build docker image for ${repo-name}
             docker_build:
-              image_name: ubuntu
+              image_name: ${image_name}
               docker_file_path: ./Dockerfile 
               user_name: ${docker-username}
               password: ${secrets.docker-password}
@@ -52,4 +54,12 @@ pipeline:
             run: 
               - npm install
               - npm test
-            
+    - stage:
+        name: pull_image
+        runs_on: ubuntu-latest
+        jobs:
+          - name: pull image from dockerHub
+            docker_pull:
+              image_name: ${docker-username}/${image_name}
+              user_name: ${docker-username}
+              password: ${secrets.docker-password}

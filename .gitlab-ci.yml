@@ -8,9 +8,11 @@ stages:
   - lintstage
   - build
   - test
+  - pull_image
   - lintstage
   - build
   - test
+  - pull_image
 lintstage-job-1:
   image: ubuntu:latest
   stage: lintstage
@@ -31,8 +33,8 @@ build-job-2:
   stage: build
   script:
     - docker login -u GenericDockerUserName -p $docker-password
-    - docker build -t ubuntu ./Dockerfile
-    - docker push GenericDockerUserName/ubuntu
+    - docker build -t SingularCI_TestingImage ./Dockerfile
+    - docker push GenericDockerUserName/SingularCI_TestingImage
   needs: []
   services:
     - docker:dind
@@ -46,3 +48,10 @@ test-job-1:
     - lintstage-job-1
     - build-job-1
     - build-job-2
+pull_image-job-1:
+  image: ubuntu:latest
+  stage: pull_image
+  script:
+    - docker login -u GenericDockerUserName -p $docker-password
+    - docker pull GenericDockerUserName/SingularCI_TestingImage
+  needs: []
