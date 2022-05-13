@@ -90,17 +90,17 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
   }
   
   private buildSecrets() {
-    this.pipeline = this.changeValue(this.pipeline);
+    this.pipeline = this.changeSecretsSyntax(this.pipeline);
   }
 
-  private changeValue = (obj: any) => {
+  private changeSecretsSyntax = (obj: any) => {
     if (typeof obj === 'object') {
       // iterating over the object using for..in
       for (var keys in obj) {
         //checking if the current value is an object itself
         if (typeof obj[keys] === 'object') {
           // if so then again calling the same function
-          this.changeValue(obj[keys])
+          this.changeSecretsSyntax(obj[keys])
         } else {
           // else getting the value and replacing single { with {{ and so on
           const secrets: string[] = obj[keys].match(/\$\{(secrets\.)[a-zA-Z][^{}]+\}/gm);
