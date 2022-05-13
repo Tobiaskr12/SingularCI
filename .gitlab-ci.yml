@@ -9,16 +9,12 @@ stages:
   - build
   - test
   - pull_image
-  - lintstage
-  - build
-  - test
-  - pull_image
 lintstage-job-1:
   image: ubuntu:latest
   stage: lintstage
   script:
     - apt-get update -y
-    - apt-get install -y nodejs npm
+    - apt-get install -y nodejs
     - npm install
     - npm run lint
   needs: []

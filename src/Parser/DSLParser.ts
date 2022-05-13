@@ -11,7 +11,7 @@ import Stage, { StageSyntaxType } from '../Common/Stage';
 import SemanticModel from '../Common/SemanticModel';
 import Targets from './../SemanticModel/Targets';
 import Variables from './../SemanticModel/Variables';
-import Trigger, { Triggers } from '../SemanticModel/Trigger';
+import Trigger from '../SemanticModel/Trigger';
 import { Inject, Service } from 'typedi';
 import { JobBuilderFactory } from './JobBuilderFactory';
 import PullDockerImage from '../SemanticModel/Tasks/PullDockerImage';
@@ -19,7 +19,6 @@ import Checkout from '../SemanticModel/Tasks/Checkout';
 
 @Service({ id: 'dslparser' })
 class DSLParser{
-
   private inputFileClone;
   private fileClonePath;
   private semanticModel;
@@ -47,7 +46,7 @@ class DSLParser{
     
     const targets = this.buildTargets();
     const triggers = this.buildTriggers();
-    const stages = this.buildStages();
+    const stages = this.buildStages();;
 
     this.buildSymbolTable(stages);
 
@@ -83,7 +82,7 @@ class DSLParser{
     }
   }
   
-  private buildTriggers(): Triggers {
+  private buildTriggers(): Trigger {
     try {
       const triggersArray = YAML.parse(this.inputFileClone)['pipeline']['triggers'];
       const triggers = new Trigger();
@@ -96,7 +95,7 @@ class DSLParser{
         triggers.addBranch(triggerBranch);
       }
       
-      return triggers.getTriggers();
+      return triggers;
     } catch (error: any) {
       // TODO: throw custom error
       throw new Error(error.message);
@@ -125,7 +124,7 @@ class DSLParser{
       const stageList: StageBuilder[] = [];
 
       for (let stageObject of stages) {
-        stageList.push(this.buildStage(stageObject.stage))
+        stageList.push(this.buildStage(stageObject.stage));
       }
 
       return stageList;
@@ -137,6 +136,7 @@ class DSLParser{
   
   private buildSymbolTable(stages: StageBuilder[]) {
     const stageSymbolTable = StageSymbolTable.getInstance();
+    stageSymbolTable.reset();
 
     for (let stage of stages) { 
       stageSymbolTable.addStage(stage);
@@ -220,8 +220,10 @@ class DSLParser{
     }
   }
 
-  private buildSemanticModel(targets: string[], variables: Record<string, string>, trigger: Triggers): SemanticModel {
+  private buildSemanticModel(targets: string[], variables: Record<string, string>, trigger: Trigger): SemanticModel {
     const stageSymbolTable = StageSymbolTable.getInstance();
+    
+    this.semanticModel.reset();
 
     for (let stage in stageSymbolTable.getStages()) {
       const stageBuilder = stageSymbolTable.getStage(stage);

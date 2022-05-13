@@ -28,7 +28,7 @@ pipeline:
           - name: Lint
             run: 
               - apt-get update -y
-              - apt-get install -y nodejs npm
+              - apt-get install -y nodejs
               - npm install
               - npm run lint
     - stage:

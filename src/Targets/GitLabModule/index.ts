@@ -47,7 +47,6 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
 
   private buildStages() {
     const stagesArray: string[] = [];
-    
     for (let i = 0; i < this.semanticModel.getStages().length; i++) { 
       const stage: Stage = this.semanticModel.getStages()[i];
       stagesArray.push(stage.getName());
@@ -58,8 +57,8 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
 
   
   private buildTriggers() {
-    const isPushSet = this.semanticModel.getTrigger().types.includes('push');
-    const isPullRequestSet = this.semanticModel.getTrigger().types.includes('pull_request');
+    const isPushSet = this.semanticModel.getTrigger().getTypes().includes('push');
+    const isPullRequestSet = this.semanticModel.getTrigger().getTypes().includes('pull_request');
 
     const rulesObject: [{
       if: string,

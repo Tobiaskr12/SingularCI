@@ -1,6 +1,6 @@
 import Task from '../../Common/Task';
 
-export default class Run implements Task{
+export default class Run implements Task {
     constructor(
         private commands: string[],
     ){}
@@ -9,3 +9,4 @@ export default class Run implements Task{
         return this.commands;
     }
 }
+

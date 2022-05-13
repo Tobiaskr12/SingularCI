@@ -53,8 +53,8 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
   }
   
   private buildTriggers = () => {
-    const isPushSet = this.semanticModel.getTrigger().types.includes('push');
-    const isPullRequestSet = this.semanticModel.getTrigger().types.includes('pull_request');
+    const isPushSet = this.semanticModel.getTrigger().getTypes().includes('push');
+    const isPullRequestSet = this.semanticModel.getTrigger().getTypes().includes('pull_request');
 
     const onObject: {
       push?: TriggerType,
@@ -67,7 +67,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
 
     if (isPushSet) {
       const pushObject = {
-          branches: [...this.semanticModel.getTrigger().branches]
+          branches: [...this.semanticModel.getTrigger().getBranches()]
       };
 
       triggerObject.on.push = pushObject;
@@ -75,7 +75,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
 
     if (isPullRequestSet) {
       const pullRequestObject = {
-          branches: [...this.semanticModel.getTrigger().branches]
+          branches: [...this.semanticModel.getTrigger().getBranches()]
       };
 
       triggerObject.on.pull_request = pullRequestObject;

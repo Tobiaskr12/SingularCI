@@ -1,8 +1,3 @@
-export type Triggers = {
-    types: string[],
-    branches: string[]
-}
-
 export default class Trigger {
     private validTypes = [
         "push",
@@ -28,13 +23,6 @@ export default class Trigger {
 
     getBranches(): string[]{
         return this.branches;
-    }
-
-    getTriggers(): Triggers {
-        return {
-            types: this.types,
-            branches: this.branches
-        }
     }
 
     private isTypeValid(type: string): boolean { 

@@ -3,7 +3,7 @@ import Job, { JobSyntaxType } from './Job';
 export type StageSyntaxType = {
     name: string,
     runs_on: string,
-    needs?: string,
+    needs?: string[],
     jobs: JobSyntaxType[]
 }
 
@@ -23,7 +23,7 @@ export default class Stage {
         return this.jobs;
     }
 
-    getNeeds(): string[]{
+    getNeeds(): string[] {
         return this.needs;
     }
 

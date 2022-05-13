@@ -9,7 +9,6 @@ export default class Targets {
         if (this.isTargetValid(target)){
             this.targets.push(target);
         } else {
-            // TODO: throw custom error
             throw new Error(`${target} is not a valid target`);
         }
     }

@@ -9,7 +9,7 @@ export default class StageSymbolTable {
     this.stages = {};
   }
 
-  static getInstance (): StageSymbolTable {
+  static getInstance(): StageSymbolTable {
     if (!this.instance) {
       this.instance = new StageSymbolTable();
     }
@@ -17,11 +17,11 @@ export default class StageSymbolTable {
     return this.instance;
   }
 
-  addStage (stage: StageBuilder): void {
+  addStage(stage: StageBuilder): void {
     this.stages[stage.getName()] = stage;
   }
 
-  getStage (name: string): StageBuilder {
+  getStage(name: string): StageBuilder {
     if (this.stages[name]) {
       return this.stages[name];
     }
@@ -29,7 +29,11 @@ export default class StageSymbolTable {
     throw new Error(`Stage ${name} not found`);
   }
 
-  getStages (): Record<string, StageBuilder> {
+  getStages(): Record<string, StageBuilder> {
     return this.stages;
+  }
+
+  reset(): void {
+    this.stages = {};
   }
 }
