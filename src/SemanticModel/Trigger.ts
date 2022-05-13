@@ -26,6 +26,10 @@ export default class Trigger {
     }
 
     private isTypeValid(type: string): boolean { 
-        return this.validTypes.includes(type);
+        if (this.validTypes.includes(type)) {
+            return true;
+        };
+
+        throw new Error(`${type} is not a valid trigger type`);
     }
 }
