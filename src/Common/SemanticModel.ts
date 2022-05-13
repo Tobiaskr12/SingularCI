@@ -2,25 +2,27 @@ import { Service } from "typedi";
 import Trigger from "../SemanticModel/Trigger";
 import Stage from "./Stage";
 import Targets from './../SemanticModel/Targets';
+import Variables from './../SemanticModel/Variables';
 
 
 @Service({ id: 'SemanticModel' })
 export default class SemanticModel {    
     private platformTargets: Targets;
-    private variables: Record<string, string> = {};
+    private variables: Variables;
     private trigger: Trigger;
     private stages: Stage[] = [];
 
     constructor() {
         this.trigger = new Trigger();
         this.platformTargets = new Targets();
+        this.variables = new Variables();
     }
 
     setPlatformTargets(platformTargets: Targets) {
         this.platformTargets = platformTargets;
     }
 
-    setVariables(variables: Record<string, string>) {
+    setVariables(variables: Variables) {
         this.variables = variables;
     }
 
@@ -36,7 +38,7 @@ export default class SemanticModel {
         return this.platformTargets;
     }
 
-    getVariables(): Record<string, string> {
+    getVariables(): Variables {
         return this.variables;
     }
 
@@ -55,7 +57,7 @@ export default class SemanticModel {
     reset() {
         this.stages = [];
         this.platformTargets = new Targets();
-        this.variables = {};
+        this.variables = new Variables();
         this.trigger = new Trigger();
     }
 }

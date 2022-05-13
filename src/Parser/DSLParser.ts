@@ -53,9 +53,9 @@ class DSLParser{
     return this.buildSemanticModel(targets, variables, triggers);
   }
 
-  private resolveVariables(variables: Record<string, string>): void {
-    for (let variable in variables) {
-      this.inputFileClone = this.inputFileClone.replaceAll("${" + variable + "}", variables[variable]);
+  private resolveVariables(variables: Variables): void {
+    for (let variable in variables.getVariables()) {
+      this.inputFileClone = this.inputFileClone.replaceAll("${" + variable + "}", variables.getVariable(variable));
     }
 
     // The regex tests if there are any undeclared variables in the file, which are not platform specific secrets
@@ -102,7 +102,7 @@ class DSLParser{
     }
   }
 
-  private buildVariables(): Record<string, string> {
+  private buildVariables(): Variables {
     try {
       const variablesArray = YAML.parse(this.inputFileClone)['pipeline']['variables'];
       const variables = new Variables();
@@ -111,7 +111,7 @@ class DSLParser{
         variables.addVariable(variable.key, variable.value);
       }
 
-      return variables.getVariables();
+      return variables;
     } catch (error: any) {
       // TODO: throw custom error
       throw new Error(error.message);
@@ -220,7 +220,7 @@ class DSLParser{
     }
   }
 
-  private buildSemanticModel(targets: Targets, variables: Record<string, string>, trigger: Trigger): SemanticModel {
+  private buildSemanticModel(targets: Targets, variables: Variables, trigger: Trigger): SemanticModel {
     const stageSymbolTable = StageSymbolTable.getInstance();
     
     this.semanticModel.reset();
