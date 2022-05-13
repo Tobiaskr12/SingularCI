@@ -66,7 +66,7 @@ class DSLParser{
     }
   }
 
-  private buildTargets(): string[] {
+  private buildTargets(): Targets {
     try {
       const targetsArray = YAML.parse(this.inputFileClone)['pipeline']['targets']; 
       const targets = new Targets();
@@ -75,7 +75,7 @@ class DSLParser{
         targets.addTarget(target);
       }
 
-      return targets.getTargets();
+      return targets;
     } catch (error: any) {
       // TODO: throw custom error
       throw new Error(error.message);
@@ -220,7 +220,7 @@ class DSLParser{
     }
   }
 
-  private buildSemanticModel(targets: string[], variables: Record<string, string>, trigger: Trigger): SemanticModel {
+  private buildSemanticModel(targets: Targets, variables: Record<string, string>, trigger: Trigger): SemanticModel {
     const stageSymbolTable = StageSymbolTable.getInstance();
     
     this.semanticModel.reset();
@@ -236,7 +236,7 @@ class DSLParser{
       this.semanticModel.addStage(finalStage);
     }
 
-    this.semanticModel.setTargets(targets);
+    this.semanticModel.setPlatformTargets(targets);
     this.semanticModel.setVariables(variables);
     this.semanticModel.setTrigger(trigger);
 

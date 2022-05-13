@@ -39,7 +39,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
   }
   
   private shouldGenerate(): boolean {
-    return this.semanticModel != undefined && this.semanticModel.getTargets().includes('GitHub');
+    return this.semanticModel != undefined && this.semanticModel.getPlatformTargets().getTargets().includes('GitHub');
   }
   
   private createFolderStructure = () => {

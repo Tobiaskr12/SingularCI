@@ -42,7 +42,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
   }
 
   private shouldGenerate(): boolean {
-    return this.semanticModel != undefined && this.semanticModel.getTargets().includes('GitLab');
+    return this.semanticModel != undefined && this.semanticModel.getPlatformTargets().getTargets().includes('GitLab');
   }
 
   private buildStages() {
