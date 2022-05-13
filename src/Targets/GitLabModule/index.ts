@@ -1,5 +1,5 @@
 import YAML from 'yaml';
-import SemanticModel from './../../Common/SemanticModel';
+import Pipeline from '../../Common/Pipeline';
 import { TargetPlatformGenerator } from './../../Common/TargetPlatformGenerator';
 import fs from 'fs';
 import path from 'path';
@@ -11,22 +11,18 @@ import Run from '../../SemanticModel/Tasks/Run';
 import { dockerSetup, generateBuildDockerImageTask, generatePullDockerImageTask, generateRunTask } from './tasks';
 
 export class GitLabConfigGenerator implements TargetPlatformGenerator {
-  private semanticModel: SemanticModel;
+  private pipeline: Pipeline;
   private configObject: any;
 
-  constructor(semanticModel: SemanticModel) { 
-    this.semanticModel = semanticModel;
+  constructor(pipeline: Pipeline) { 
+    this.pipeline = pipeline;
     this.configObject = {};
   }
 
   public generateConfig = () => {
     if (!this.shouldGenerate()) return;
-    
-    // console.log(YAML.stringify(this.configObject));
-    // console.log(util.inspect(this.semanticModel, false, null, true /* enable colors */))
 
     this.buildSecrets();
-
     this.buildTriggers();
     this.buildStages();
     this.buildJobs();
@@ -42,13 +38,13 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
   }
 
   private shouldGenerate(): boolean {
-    return this.semanticModel != undefined && this.semanticModel.getPlatformTargets().getTargets().includes('GitLab');
+    return this.pipeline != undefined && this.pipeline.getPlatformTargets().getTargets().includes('GitLab');
   }
 
   private buildStages() {
     const stagesArray: string[] = [];
-    for (let i = 0; i < this.semanticModel.getStages().length; i++) { 
-      const stage: Stage = this.semanticModel.getStages()[i];
+    for (let i = 0; i < this.pipeline.getStages().length; i++) { 
+      const stage: Stage = this.pipeline.getStages()[i];
       stagesArray.push(stage.getName());
     }
 
@@ -57,8 +53,8 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
 
   
   private buildTriggers() {
-    const isPushSet = this.semanticModel.getTrigger().getTypes().includes('push');
-    const isPullRequestSet = this.semanticModel.getTrigger().getTypes().includes('pull_request');
+    const isPushSet = this.pipeline.getTrigger().getTypes().includes('push');
+    const isPullRequestSet = this.pipeline.getTrigger().getTypes().includes('pull_request');
 
     const rulesObject: [{
       if: string,
@@ -94,7 +90,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
   }
   
   private buildSecrets() {
-    this.semanticModel = this.changeValue(this.semanticModel);
+    this.pipeline = this.changeValue(this.pipeline);
   }
 
   private changeValue = (obj: any) => {
@@ -122,7 +118,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
   }
 
   buildJobs() {
-    const stages = this.semanticModel.getStages();
+    const stages = this.pipeline.getStages();
 
     for (let i = 0; i < stages.length; i++) {
       const jobs = stages[i].getJobs();
@@ -144,8 +140,8 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
           }
         } = {
           [`${stages[i].getName()}-job-${j + 1}`]: {
-            image: this.getSelectedImage(this.semanticModel.getStages()[i]),
-            stage: this.semanticModel.getStages()[i].getName(),
+            image: this.getSelectedImage(this.pipeline.getStages()[i]),
+            stage: this.pipeline.getStages()[i].getName(),
             script: tasksArray,
             needs: needsArray
           }
@@ -153,7 +149,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
 
         for (let k = 0; k < stages[i].getNeeds().length; k++) {
           const needsName: string = stages[i].getNeeds()[k];
-          const neededStage = this.semanticModel.getStages().find(stage => stage.getName() === needsName);
+          const neededStage = this.pipeline.getStages().find(stage => stage.getName() === needsName);
 
           if (neededStage) { 
             const jobAmount = neededStage.getJobs().length;

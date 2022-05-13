@@ -1,5 +1,5 @@
 import YAML from 'yaml';
-import SemanticModel from './../../Common/SemanticModel';
+import Pipeline from '../../Common/Pipeline';
 import fs from 'fs';
 import path from 'path';
 import { TargetPlatformGenerator } from '../../Common/TargetPlatformGenerator';
@@ -10,11 +10,11 @@ import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
 import Run from '../../SemanticModel/Tasks/Run';
 
 export class GitHubConfigGenerator implements TargetPlatformGenerator {
-  private semanticModel: SemanticModel;
+  private pipeline: Pipeline;
   private configObject: any;
   
-  constructor(semanticModel: SemanticModel) {
-    this.semanticModel = semanticModel;
+  constructor(pipeline: Pipeline) {
+    this.pipeline = pipeline;
     this.configObject = {};
   }
 
@@ -39,7 +39,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
   }
   
   private shouldGenerate(): boolean {
-    return this.semanticModel != undefined && this.semanticModel.getPlatformTargets().getTargets().includes('GitHub');
+    return this.pipeline != undefined && this.pipeline.getPlatformTargets().getTargets().includes('GitHub');
   }
   
   private createFolderStructure = () => {
@@ -53,8 +53,8 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
   }
   
   private buildTriggers = () => {
-    const isPushSet = this.semanticModel.getTrigger().getTypes().includes('push');
-    const isPullRequestSet = this.semanticModel.getTrigger().getTypes().includes('pull_request');
+    const isPushSet = this.pipeline.getTrigger().getTypes().includes('push');
+    const isPullRequestSet = this.pipeline.getTrigger().getTypes().includes('pull_request');
 
     const onObject: {
       push?: TriggerType,
@@ -67,7 +67,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
 
     if (isPushSet) {
       const pushObject = {
-          branches: [...this.semanticModel.getTrigger().getBranches()]
+          branches: [...this.pipeline.getTrigger().getBranches()]
       };
 
       triggerObject.on.push = pushObject;
@@ -75,7 +75,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
 
     if (isPullRequestSet) {
       const pullRequestObject = {
-          branches: [...this.semanticModel.getTrigger().getBranches()]
+          branches: [...this.pipeline.getTrigger().getBranches()]
       };
 
       triggerObject.on.pull_request = pullRequestObject;
@@ -85,7 +85,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
   }
 
   private buildSecrets = () => {  
-    this.semanticModel = this.changeValue(this.semanticModel);
+    this.pipeline = this.changeValue(this.pipeline);
   } 
 
   private changeValue = (obj: any) => {
@@ -119,7 +119,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
       jobs: StagesArray
     };
 
-    for (let stage of this.semanticModel.getStages()) { 
+    for (let stage of this.pipeline.getStages()) { 
       const builtStage = this.buildStage(stage);
       const stageId = this.generateStageId(stage.getName());
       stagesObject.jobs[stageId] = builtStage; 

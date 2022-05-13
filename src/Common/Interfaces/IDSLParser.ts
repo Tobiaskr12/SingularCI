@@ -1,5 +1,5 @@
-import SemanticModel from "../SemanticModel";
+import Pipeline from "../Pipeline";
 
 export interface IDSLParser {
-  parse(): SemanticModel;
+  parse(): Pipeline;
 }

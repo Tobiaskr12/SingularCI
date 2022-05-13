@@ -1,12 +1,12 @@
 import { Service } from "typedi";
 import Trigger from "../SemanticModel/Trigger";
 import Stage from "./Stage";
-import Targets from './../SemanticModel/Targets';
-import Variables from './../SemanticModel/Variables';
+import Targets from '../SemanticModel/Targets';
+import Variables from '../SemanticModel/Variables';
 
 
-@Service({ id: 'SemanticModel' })
-export default class SemanticModel {    
+@Service({ id: 'Pipeline' })
+export default class Pipeline {    
     private platformTargets: Targets;
     private variables: Variables;
     private trigger: Trigger;
