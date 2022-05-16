@@ -11,22 +11,23 @@ export default class Job{
         return this.tasks;
     }
 }
+export type dockerBuildSyntax = {
+    image_name: string,
+    docker_file_path: string,
+    user_name: string,
+    password: string
+}
+
+export type dockerPullSyntax = {
+    user_name: string,
+    password: string,
+    image_name: string
+}
 
 export type JobSyntaxType = {
     name: string,
     run?: string[];
-    docker_build?: {
-        image_name: string,
-        docker_file_path: string,
-        user_name: string,
-        password: string
-    };
-    docker_pull?: {
-        user_name: string,
-        password: string,
-        image_name: string
-    },
-    checkout?: {
-        repo_url: string,
-    }
+    docker_build?: dockerBuildSyntax;
+    docker_pull?: dockerPullSyntax;
+    checkout?: string
 }

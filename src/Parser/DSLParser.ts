@@ -1,3 +1,4 @@
+import { dockerBuildSyntax, dockerPullSyntax } from './../Common/Job';
 import YAML from 'yaml';
 import fs from 'fs';
 import path from 'path';
@@ -77,7 +78,6 @@ class DSLParser{
 
       return targets;
     } catch (error: any) {
-      // TODO: throw custom error
       throw new Error(error.message);
     }
   }
@@ -97,7 +97,6 @@ class DSLParser{
       
       return triggers;
     } catch (error: any) {
-      // TODO: throw custom error
       throw new Error(error.message);
     }
   }
@@ -113,7 +112,6 @@ class DSLParser{
 
       return variables;
     } catch (error: any) {
-      // TODO: throw custom error
       throw new Error(error.message);
     }
   }
@@ -129,7 +127,6 @@ class DSLParser{
 
       return stageList;
     } catch (error: any) {
-      // TODO: throw custom error
       throw new Error(error.message);
     }
   }
@@ -151,17 +148,14 @@ class DSLParser{
         stageBuilder.setRunsOn(stage.runs_on);
       
         this.addNeedsToStage(stage, stageBuilder);
-        this.populateJobs(stage, stageBuilder);
+        this.buildJobs(stage, stageBuilder);
   
       } else {
-        // TODO: throw custom error
         throw new Error(`Stage is missing a name or runs_on property`);
       }
     } catch (error: any) {
       console.error(error.message);
     }
-
-
     return stageBuilder;
   }
 
@@ -173,7 +167,7 @@ class DSLParser{
     }
   }
 
-  private populateJobs(stage: StageSyntaxType, stageBuilder: StageBuilder) {
+  private buildJobs(stage: StageSyntaxType, stageBuilder: StageBuilder) {
     for (let job of stage.jobs) {
       const jobBuilder = this.jobBuilderFactory.createJobBuilder();
 
@@ -188,36 +182,49 @@ class DSLParser{
 
   private addTasksToJob(job: JobSyntaxType, jobBuilder: JobBuilder) {
     if (job.run) {
-      const run = new Run(job.run);
-      jobBuilder.addTask(run);
+      jobBuilder.addTask(this.createRunTask(job.run));
     } 
     
     if (job.docker_build) { 
-      const docker_build = new BuildDockerImage(
-        job.docker_build.image_name,
-        job.docker_build.docker_file_path,
-        job.docker_build.user_name,
-        job.docker_build.password  
-      )
-      jobBuilder.addTask(docker_build);
+      jobBuilder.addTask(this.createDockerBuildTask(job.docker_build));
     }
 
     if (job.docker_pull) { 
-      const docker_pull = new PullDockerImage(
-        job.docker_pull.image_name,
-        job.docker_pull.user_name,
-        job.docker_pull.password
-      )
-      jobBuilder.addTask(docker_pull);
+      jobBuilder.addTask(this.createDockerPullTask(job.docker_pull));
     }
 
     if (job.checkout) {
-      const checkout = new Checkout(
-        job.checkout.repo_url
-      );
-
-      jobBuilder.addTask(checkout);
+      jobBuilder.addTask(this.createCheckoutTask(job.checkout));
     }
+  }
+
+  private createRunTask(command: string[]): Run {
+    const run = new Run(command);
+    return run;
+  }
+
+  private createDockerBuildTask(job: dockerBuildSyntax): BuildDockerImage {
+    const docker_build = new BuildDockerImage(
+      job.image_name,
+      job.docker_file_path,
+      job.user_name,
+      job.password  
+    )
+    return docker_build;
+  }
+
+  private createDockerPullTask(job: dockerPullSyntax): PullDockerImage {
+    const docker_pull = new PullDockerImage(
+      job.image_name,
+      job.user_name,
+      job.password
+    )
+    return docker_pull;
+  }
+
+  private createCheckoutTask(repo_url: string): Checkout {
+    const checkout = new Checkout(repo_url);
+    return checkout;
   }
 
   private buildPipeline(targets: Targets, variables: Variables, trigger: Trigger): Pipeline {

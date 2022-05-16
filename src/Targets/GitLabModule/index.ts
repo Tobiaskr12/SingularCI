@@ -9,6 +9,7 @@ import Checkout from '../../SemanticModel/Tasks/Checkout';
 import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
 import Run from '../../SemanticModel/Tasks/Run';
 import { dockerSetup, generateBuildDockerImageTask, generatePullDockerImageTask, generateRunTask } from './tasks';
+import { GitLabJobObject } from './types';
 
 export class GitLabConfigGenerator implements TargetPlatformGenerator {
   private pipeline: Pipeline;
@@ -24,9 +25,14 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
 
     this.buildSecrets();
     this.buildTriggers();
+
     this.buildStages();
     this.buildJobs();
 
+    this.writeToFile();
+  }
+
+  private writeToFile = () => {
     fs.writeFileSync(
       path.join(
         process.cwd(),
@@ -113,11 +119,10 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
         }
       }
     }
-
     return obj;
   }
 
-  buildJobs() {
+  private buildJobs() {
     const stages = this.pipeline.getStages();
 
     for (let i = 0; i < stages.length; i++) {
@@ -125,20 +130,17 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
 
       for (let j = 0; j < jobs.length; j++) {
         const tasks = jobs[j].getTasks();
-        let tasksArray: any[] = [];
-        const needsArray: string[] = [];
+        const needs = stages[i].getNeeds();
         const beforeTasks: any[] = [];
-        
-        const jobObject: { 
-          [key: string]: {
-            image: string,
-            stage: string,
-            script: string[],
-            needs: string[],
-            services?: string[],
-            before_script?: string[]
-          }
-        } = {
+        const stage = stages[i];
+        const stageKey = `${stage.getName()}-job-${j + 1}`;
+        let tasksArray: any[] = [];
+        let needsArray: string[] = [];
+
+        needsArray = this.buildNeeds(needs);
+        tasksArray = this.buildTasks(tasks);
+
+        const jobObject:GitLabJobObject = {
           [`${stages[i].getName()}-job-${j + 1}`]: {
             image: this.getSelectedImage(this.pipeline.getStages()[i]),
             stage: this.pipeline.getStages()[i].getName(),
@@ -147,49 +149,59 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
           }
         };
 
-        for (let k = 0; k < stages[i].getNeeds().length; k++) {
-          const needsName: string = stages[i].getNeeds()[k];
-          const neededStage = this.pipeline.getStages().find(stage => stage.getName() === needsName);
-
-          if (neededStage) { 
-            const jobAmount = neededStage.getJobs().length;
-
-            for (let l = 0; l < jobAmount; l++) {
-              const jobName = `${neededStage.getName()}-job-${l + 1}`;
-              needsArray.push(jobName);
-            }
-          }
+        if (jobObject[stageKey]) {
+          jobObject[stageKey].services = dockerSetup()
         }
 
-        for (let task of tasks) {
-          if (task instanceof BuildDockerImage) {
-            const stageKey = `${stages[i].getName()}-job-${j + 1}`;
-            
-            jobObject[stageKey].services = dockerSetup(stages[i], task)
-            
-            tasksArray.push(...generateBuildDockerImageTask(task));
-          }
-          
-          if (task instanceof Checkout) {
-            console.log("Checkout should not be specified on GitLab")
-            //tasksArray.push(generateCheckoutTask(task));
-          }
-          
-          if (task instanceof PullDockerImage) {
-            tasksArray.push(...generatePullDockerImageTask(task));
-          }
-
-          if (task instanceof Run) {
-            tasksArray.push(...generateRunTask(task));
-          }
-        }
-      
         Object.assign(this.configObject, jobObject);
       }
     }
   }
 
-  getSelectedImage(stage: Stage): string {
+  private buildNeeds = (needs:any):string[] => {
+    const needsArray: string[] = [];
+
+    for (let k = 0; k < needs.length; k++) {
+
+      const needsName: string = needs[k];
+      const neededStage = this.pipeline.getStages().find(stage => stage.getName() === needsName);
+
+      if (neededStage) { 
+        const jobAmount = neededStage.getJobs().length;
+
+        for (let l = 0; l < jobAmount; l++) {
+          const jobName = `${neededStage.getName()}-job-${l + 1}`;
+          needsArray.push(jobName);
+        }
+      }
+    }
+    return needsArray;
+  }
+
+  private buildTasks = (tasks:any):any[] => {
+    const tasksArray: any[] = [];
+
+    for (let task of tasks) {
+      if (task instanceof BuildDockerImage) {
+        tasksArray.push(...generateBuildDockerImageTask(task));
+      }
+      
+      if (task instanceof Checkout) {
+        console.log("Checkout should not be specified on GitLab")
+      }
+      
+      if (task instanceof PullDockerImage) {
+        tasksArray.push(...generatePullDockerImageTask(task));
+      }
+
+      if (task instanceof Run) {
+        tasksArray.push(...generateRunTask(task));
+      }
+    }
+    return tasksArray;
+  }
+
+  private getSelectedImage(stage: Stage): string {
     const runsOn = stage.getRunsOn();
 
     if (runsOn === 'ubuntu-latest') {

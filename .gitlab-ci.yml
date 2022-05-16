@@ -18,12 +18,16 @@ lintstage-job-1:
     - npm install
     - npm run lint
   needs: []
+  services:
+    - docker:dind
 build-job-1:
   image: ubuntu:latest
   stage: build
   script:
     - echo "ANOTHER GREAT SUCCESS"
   needs: []
+  services:
+    - docker:dind
 build-job-2:
   image: ubuntu:latest
   stage: build
@@ -44,6 +48,8 @@ test-job-1:
     - lintstage-job-1
     - build-job-1
     - build-job-2
+  services:
+    - docker:dind
 pull_image-job-1:
   image: ubuntu:latest
   stage: pull_image
@@ -51,3 +57,5 @@ pull_image-job-1:
     - docker login -u GenericDockerUserName -p $docker-password
     - docker pull GenericDockerUserName/SingularCI_TestingImage
   needs: []
+  services:
+    - docker:dind

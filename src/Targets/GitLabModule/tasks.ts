@@ -12,7 +12,7 @@ export const generateRunTask = (task: Run) => {
   return task.getCommands();
 }
 
-export const dockerSetup = (stage: Stage, task: BuildDockerImage) => {
+export const dockerSetup = (stage?: Stage, task?: BuildDockerImage) => {
   const resultArray: string[] = [];
 
   resultArray.push("docker:dind")

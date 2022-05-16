@@ -28,6 +28,10 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
     this.buildTriggers();
     this.buildStages();
 
+    this.writeToFile()
+  }
+
+  private writeToFile = () => {
     fs.writeFileSync(
       path.join(
         process.cwd(),
@@ -101,7 +105,9 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
           const secrets: string[] = obj[keys].match(/\$\{(secrets\.)[a-zA-Z][^{}]+\}/gm);
           if (secrets) {
             for (let i = 0; i < secrets.length; i++) {
-              let newValue = obj[keys].replace(secrets[i], "${{ " + secrets[i].replace("${", "").replace("}", "") + " }}");
+              let newValue = obj[keys].replace(
+                secrets[i], "${{ " + secrets[i].replace("${", "").replace("}", "") + " }}"
+                );
               obj[keys] = newValue;
             }
           }
@@ -152,23 +158,27 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
       const tasks = job.getTasks();
 
       for (let task of tasks) {
-        if (task instanceof BuildDockerImage) {
-          resultArr.push(generateBuildDockerImageTask(task));
-        }
-        
-        if (task instanceof Checkout) {
-          resultArr.push(generateCheckoutTask(task));
-        }
-        
-        if (task instanceof PullDockerImage) {
-          resultArr.push(generatePullDockerImageTask(task));
-        }
-        
-        if (task instanceof Run) {
-          resultArr.push(generateRunTask(task));
-        }
+        resultArr.push(this.buildTask(task));
       }
     }
     return resultArr;
+  }
+
+  private buildTask = (task:any) => {
+    if (task instanceof BuildDockerImage) {
+      return generateBuildDockerImageTask(task);
+    }
+    
+    if (task instanceof Checkout) {
+      return generateCheckoutTask(task);
+    }
+    
+    if (task instanceof PullDockerImage) {
+      return  generatePullDockerImageTask(task);
+    }
+    
+    if (task instanceof Run) {
+      return generateRunTask(task);
+    }
   }
 }
