@@ -1,4 +1,4 @@
-export interface GitLabJobObject {
+export type GitLabJobObject = {
   [key: string]: {
     image: string,
     stage: string,

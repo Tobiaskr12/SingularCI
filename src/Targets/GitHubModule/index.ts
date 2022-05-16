@@ -8,6 +8,7 @@ import Checkout from '../../SemanticModel/Tasks/Checkout';
 import { generateBuildDockerImageTask, generateCheckoutTask, generatePullDockerImageTask, generateRunTask } from './tasks';
 import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
 import Run from '../../SemanticModel/Tasks/Run';
+import { GitHubTriggerObject, StageObject } from './types';
 
 export class GitHubConfigGenerator implements TargetPlatformGenerator {
   private pipeline: Pipeline;

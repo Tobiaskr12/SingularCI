@@ -1,14 +1,14 @@
-type TriggerType = {
+export type TriggerType = {
   branches: string[]
 }
 
-type StageObject = {
+export type StageObject = {
   'runs-on': string,
   needs?: string,
   steps: any[]
 };
 
-type GitHubTriggerObject = {
+export type GitHubTriggerObject = {
   push?: TriggerType,
   pull_request?: TriggerType
 }

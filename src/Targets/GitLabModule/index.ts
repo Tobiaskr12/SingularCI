@@ -139,7 +139,6 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
 
         needsArray = this.buildNeeds(needs);
         
-
         const jobObject:GitLabJobObject = {
           [stageKey]: {
             image: this.getSelectedImage(this.pipeline.getStages()[i]),
