@@ -60,10 +60,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
     const isPushSet = this.pipeline.getTrigger().getTypes().includes('push');
     const isPullRequestSet = this.pipeline.getTrigger().getTypes().includes('pull_request');
 
-    const onObject: {
-      push?: TriggerType,
-      pull_request?: TriggerType
-    } = {};
+    const onObject:GitHubTriggerObject = {};
 
     const triggerObject = {
       on: onObject

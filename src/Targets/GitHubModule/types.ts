@@ -8,7 +8,7 @@ type StageObject = {
   steps: any[]
 };
 
-interface GitHubTriggerObject {
+type GitHubTriggerObject = {
   push?: TriggerType,
   pull_request?: TriggerType
 }

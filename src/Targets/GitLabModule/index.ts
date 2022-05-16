@@ -133,25 +133,23 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
         const needs = stages[i].getNeeds();
         const beforeTasks: any[] = [];
         const stage = stages[i];
-        const stageKey = `${stage.getName()}-job-${j + 1}`;
+        const stageKey = `${stage.getName()}-${this.sanitizeJobName(jobs[j].getName())}`;
         let tasksArray: any[] = [];
         let needsArray: string[] = [];
 
         needsArray = this.buildNeeds(needs);
-        tasksArray = this.buildTasks(tasks);
+        
 
         const jobObject:GitLabJobObject = {
-          [`${stages[i].getName()}-job-${j + 1}`]: {
+          [stageKey]: {
             image: this.getSelectedImage(this.pipeline.getStages()[i]),
             stage: this.pipeline.getStages()[i].getName(),
             script: tasksArray,
             needs: needsArray
           }
         };
-
-        if (jobObject[stageKey]) {
-          jobObject[stageKey].services = dockerSetup()
-        }
+        
+        tasksArray = this.buildTasks(stageKey, jobObject,tasks);
 
         Object.assign(this.configObject, jobObject);
       }
@@ -167,10 +165,11 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
       const neededStage = this.pipeline.getStages().find(stage => stage.getName() === needsName);
 
       if (neededStage) { 
-        const jobAmount = neededStage.getJobs().length;
+        const jobs = neededStage.getJobs();
+        const jobAmount = jobs.length;
 
         for (let l = 0; l < jobAmount; l++) {
-          const jobName = `${neededStage.getName()}-job-${l + 1}`;
+          const jobName = `${neededStage.getName()}-${this.sanitizeJobName(jobs[l].getName())}`;
           needsArray.push(jobName);
         }
       }
@@ -178,11 +177,12 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
     return needsArray;
   }
 
-  private buildTasks = (tasks:any):any[] => {
+  private buildTasks = (stageKey: string, jobObject:GitLabJobObject, tasks:any):any[] => {
     const tasksArray: any[] = [];
 
     for (let task of tasks) {
       if (task instanceof BuildDockerImage) {
+        jobObject[stageKey].services = dockerSetup()
         tasksArray.push(...generateBuildDockerImageTask(task));
       }
       
@@ -199,6 +199,10 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
       }
     }
     return tasksArray;
+  }
+
+  private sanitizeJobName = (name:string):string => {
+    return name.replaceAll(' ','_')
   }
 
   private getSelectedImage(stage: Stage): string {

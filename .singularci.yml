@@ -38,7 +38,7 @@ pipeline:
           - name: Checkout
             run: 
               - echo "ANOTHER GREAT SUCCESS"
-          - name: build docker image for ${repo-name}
+          - name: build docker image
             docker_build:
               image_name: ${image_name}
               docker_file_path: ./Dockerfile 

@@ -9,53 +9,33 @@ stages:
   - build
   - test
   - pull_image
-lintstage-job-1:
+lintstage-Lint:
   image: ubuntu:latest
   stage: lintstage
-  script:
-    - apt-get update -y
-    - apt-get install -y nodejs
-    - npm install
-    - npm run lint
+  script: []
   needs: []
-  services:
-    - docker:dind
-build-job-1:
+build-Checkout:
   image: ubuntu:latest
   stage: build
-  script:
-    - echo "ANOTHER GREAT SUCCESS"
+  script: []
   needs: []
-  services:
-    - docker:dind
-build-job-2:
+build-build_docker_image:
   image: ubuntu:latest
   stage: build
-  script:
-    - docker login -u GenericDockerUserName -p $docker-password
-    - docker build -t SingularCI_TestingImage ./Dockerfile
-    - docker push GenericDockerUserName/SingularCI_TestingImage
+  script: []
   needs: []
   services:
     - docker:dind
-test-job-1:
+test-Unit_test:
   image: ubuntu:latest
   stage: test
-  script:
-    - npm install
-    - npm test
+  script: []
   needs:
-    - lintstage-job-1
-    - build-job-1
-    - build-job-2
-  services:
-    - docker:dind
-pull_image-job-1:
+    - lintstage-Lint
+    - build-Checkout
+    - build-build_docker_image
+pull_image-pull_image_from_dockerHub:
   image: ubuntu:latest
   stage: pull_image
-  script:
-    - docker login -u GenericDockerUserName -p $docker-password
-    - docker pull GenericDockerUserName/SingularCI_TestingImage
+  script: []
   needs: []
-  services:
-    - docker:dind
