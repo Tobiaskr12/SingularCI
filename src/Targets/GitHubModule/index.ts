@@ -172,7 +172,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
     const runsOn = stage.getRunsOn();
     
     if (runsOn != "ubuntu-latest" && runsOn != "windows-latest") {
-      return { 'container': runsOn }
+      return { 'runs-on': "ubuntu-latest", 'container': runsOn }
     }
 
     return { 'runs-on': runsOn };
