@@ -9,6 +9,7 @@ stages:
   - build
   - test
   - pull_image
+  - custom image stage
 lintstage-Lint:
   image: ubuntu:latest
   stage: lintstage
@@ -37,5 +38,10 @@ test-Unit_test:
 pull_image-pull_image_from_dockerHub:
   image: ubuntu:latest
   stage: pull_image
+  script: []
+  needs: []
+custom image stage-custom_image_job:
+  image: node:16
+  stage: custom image stage
   script: []
   needs: []

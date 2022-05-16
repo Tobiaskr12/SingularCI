@@ -102,20 +102,22 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
   private changeSecretsSyntax = (obj: any) => {
     if (typeof obj === 'object') {
       // iterating over the object using for..in
-      for (var keys in obj) {
+      for (var key in obj) {
         //checking if the current value is an object itself
-        if (typeof obj[keys] === 'object') {
+        if (typeof obj[key] === 'object') {
           // if so then again calling the same function
-          this.changeSecretsSyntax(obj[keys])
+          this.changeSecretsSyntax(obj[key])
         } else {
           // else getting the value and replacing single { with {{ and so on
-          const secrets: string[] = obj[keys].match(/\$\{(secrets\.)[a-zA-Z][^{}]+\}/gm);
+          if (obj[key] !== undefined) {
+          const secrets: string[] = obj[key].match(/\$\{(secrets\.)[a-zA-Z][^{}]+\}/gm);
           if (secrets) {
             for (let i = 0; i < secrets.length; i++) {
-              let newValue = obj[keys].replace(secrets[i], "$" + secrets[i].replace("${secrets.", "").replace("}", "") + "");
-              obj[keys] = newValue;
+              let newValue = obj[key].replace(secrets[i], "$" + secrets[i].replace("${secrets.", "").replace("}", "") + "");
+              obj[key] = newValue;
             }
           }
+        }
         }
       }
     }
@@ -212,7 +214,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
     } else if (runsOn === 'windows-latest') {
       return 'windows:20H2';
     } else {
-      throw new Error(`The specified image ${stage.getRunsOn()} does not exist`)
+      return runsOn;
     }
   }
 

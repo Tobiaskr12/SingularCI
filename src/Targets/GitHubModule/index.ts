@@ -9,6 +9,7 @@ import { generateBuildDockerImageTask, generateCheckoutTask, generatePullDockerI
 import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
 import Run from '../../SemanticModel/Tasks/Run';
 import { GitHubTriggerObject, StageObject } from './types';
+import Stage from '../../Common/Stage';
 
 export class GitHubConfigGenerator implements TargetPlatformGenerator {
   private pipeline: Pipeline;
@@ -93,20 +94,23 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
   private changeSecretsSyntax = (obj: any) => {
     if (typeof obj === 'object') {
       // iterating over the object using for..in
-      for (var keys in obj) {
+      for (let key in obj) {
         //checking if the current value is an object itself
-        if (typeof obj[keys] === 'object') {
+        if (typeof obj[key] === 'object') {
           // if so then again calling the same function
-          this.changeSecretsSyntax(obj[keys])
+          this.changeSecretsSyntax(obj[key])
         } else {
           // else getting the value and replacing single { with {{ and so on
-          const secrets: string[] = obj[keys].match(/\$\{(secrets\.)[a-zA-Z][^{}]+\}/gm);
-          if (secrets) {
-            for (let i = 0; i < secrets.length; i++) {
-              let newValue = obj[keys].replace(
-                secrets[i], "${{ " + secrets[i].replace("${", "").replace("}", "") + " }}"
-                );
-              obj[keys] = newValue;
+          if (obj[key] !== undefined) {
+            const secrets: string[] = obj[key].match(/\$\{(secrets\.)[a-zA-Z][^{}]+\}/gm);
+            
+            if (secrets) {
+              for (let i = 0; i < secrets.length; i++) {
+                let newValue = obj[key].replace(
+                  secrets[i], "${{ " + secrets[i].replace("${", "").replace("}", "") + " }}"
+                  );
+                obj[key] = newValue;
+              }
             }
           }
         }
@@ -137,14 +141,16 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
     return str.replace(' ', '_').toLowerCase();
   }
   
-  private buildStage = (stage: any): StageObject => {
-    const stageObject: StageObject = {
-      'runs-on': stage.runs_on,
-      steps: this.buildJobs(stage.jobs)
-    };
+  private buildStage = (stage: Stage): StageObject => {
 
-    if (stage.needs.length > 0) {
-      stageObject.needs = stage.needs;
+    const stageObject: StageObject = {
+      steps: this.buildJobs(stage.getJobs())
+    }
+
+    Object.assign(stageObject, this.setRuntimeContainer(stage));
+    
+    if (stage.getNeeds().length > 0) {
+      stageObject.needs = stage.getNeeds();
     };
 
     return stageObject;
@@ -160,6 +166,16 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
       }
     }
     return resultArr;
+  }
+
+  private setRuntimeContainer = (stage: Stage) => {
+    const runsOn = stage.getRunsOn();
+    
+    if (runsOn != "ubuntu-latest" && runsOn != "windows-latest") {
+      return { 'container': runsOn }
+    }
+
+    return { 'runs-on': runsOn };
   }
 
   private buildTask = (task:any) => {

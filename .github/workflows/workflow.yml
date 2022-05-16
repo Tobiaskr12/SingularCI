@@ -9,15 +9,14 @@ on:
       - main
 jobs:
   lintstage:
-    runs-on: ubuntu-latest
     steps:
       - run: |
           apt-get update -y
           apt-get install -y nodejs
           npm install
           npm run lint
-  build:
     runs-on: ubuntu-latest
+  build:
     steps:
       - run: echo "ANOTHER GREAT SUCCESS"
       - uses: djbender/docker-buildx-pull-or-build@v0.5
@@ -26,17 +25,17 @@ jobs:
           docker_password: ${{ secrets.docker-password }}
           dockerfile: ./Dockerfile
           image: SingularCI_TestingImage
-  test:
     runs-on: ubuntu-latest
+  test:
     steps:
       - run: |
           npm install
           npm test
+    runs-on: ubuntu-latest
     needs:
       - lintstage
       - build
   pull_image:
-    runs-on: ubuntu-latest
     steps:
       - uses: djbender/docker-buildx-pull-or-build@v0.5
         with:
@@ -44,3 +43,8 @@ jobs:
           docker_password: ${{ secrets.docker-password }}
           dockerfile: ""
           image: GenericDockerUserName/SingularCI_TestingImage
+    runs-on: ubuntu-latest
+  custom_image stage:
+    steps:
+      - run: echo "Im a custom image job"
+    container: node:16

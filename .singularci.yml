@@ -63,3 +63,10 @@ pipeline:
               image_name: ${docker-username}/${image_name}
               user_name: ${docker-username}
               password: ${secrets.docker-password}
+    - stage:
+        name: custom image stage
+        runs_on: node:16
+        jobs:
+          - name: custom image job
+            run: 
+              - echo "Im a custom image job"

@@ -3,8 +3,9 @@ export type TriggerType = {
 }
 
 export type StageObject = {
-  'runs-on': string,
-  needs?: string,
+  container?: string,
+  'runs-on'?: string,
+  needs?: string[],
   steps: any[]
 };
 

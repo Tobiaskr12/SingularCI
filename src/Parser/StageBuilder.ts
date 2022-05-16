@@ -4,7 +4,7 @@ export default class StageBuilder {
     private name: string = "";
     private jobs: Job[] = [];
     private needs: string[] = [];
-    private runs_on = "";
+    private runs_on: string = "";
     
     setName(name: string){
         this.name = name;
@@ -33,10 +33,6 @@ export default class StageBuilder {
     }
 
     setRunsOn(environment: string) {
-        if (environment != "ubuntu-latest" && environment != "windows-latest") {
-            throw new Error(`Invalid runs_on environment: '${environment}' - Please use 'ubuntu-latest' or 'windows-latest'`);
-        }
-
         this.runs_on = environment;
     }
 
