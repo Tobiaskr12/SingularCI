@@ -18,6 +18,7 @@ pipeline:
     branches:
       - master
       - main
+      - refactor
   
   stages:
 
