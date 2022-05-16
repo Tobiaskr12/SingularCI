@@ -129,7 +129,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
 
     for (let stage of this.pipeline.getStages()) { 
       const builtStage = this.buildStage(stage);
-      const stageId = this.generateStageId(stage.getName());
+      const stageId = this.generateStageId(this.sanitizeJobName(stage.getName()));
       stagesObject.jobs[stageId] = builtStage; 
     }
 
@@ -176,6 +176,10 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
     }
 
     return { 'runs-on': runsOn };
+  }
+
+  private sanitizeJobName = (name:string):string => {
+    return name.replaceAll(' ','_')
   }
 
   private buildTask = (task:any) => {

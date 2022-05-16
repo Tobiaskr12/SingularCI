@@ -207,15 +207,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
   }
 
   private getSelectedImage(stage: Stage): string {
-    const runsOn = stage.getRunsOn();
-
-    if (runsOn === 'ubuntu-latest') {
-      return 'ubuntu:latest';
-    } else if (runsOn === 'windows-latest') {
-      return 'windows:20H2';
-    } else {
-      return runsOn;
-    }
+    return stage.getRunsOn();
   }
 
 }

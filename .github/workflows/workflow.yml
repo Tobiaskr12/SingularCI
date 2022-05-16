@@ -46,7 +46,7 @@ jobs:
           dockerfile: ""
           image: GenericDockerUserName/SingularCI_TestingImage
     runs-on: ubuntu-latest
-  custom_image stage:
+  custom_image_stage:
     steps:
       - run: echo "Im a custom image job"
     runs-on: ubuntu-latest
