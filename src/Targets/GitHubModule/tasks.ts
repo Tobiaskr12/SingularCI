@@ -29,15 +29,33 @@ export const generateRunTask = (task: Run) => {
 }
 
 export const generateBuildDockerImageTask = (task: BuildDockerImage) => {
-  return {
-    uses: "djbender/docker-buildx-pull-or-build@v0.5",
-    with: {
-      docker_username: task.getUserName(),
-      docker_password: task.getPassword(),
-      dockerfile: task.getBuildFilePath(),
-      image: task.getImageName()
+  return [
+    {
+      name: "Set up QEMU",
+      uses: "docker/setup-qemu-action@v2"
+    },
+    {
+      name: "Set up Docker Buildx",
+      uses: "docker/setup-buildx-action@v2"
+    },
+    {
+      name: "Login to DockerHub",
+      uses: "docker/login-action@v2",
+      with:
+      {
+        username: task.getUserName(),
+        password: task.getPassword()
+      }
+    },
+    {
+      name: "Build and push",
+      uses: "docker/build-push-action@v3",
+      with: {
+        push: true,
+        tags: `${task.getUserName()}/${task.getImageName()}:latest}`,
+      }
     }
-  } 
+  ] 
 }
 
 export const generatePullDockerImageTask = (task: PullDockerImage) => { 
