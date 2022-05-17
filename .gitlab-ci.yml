@@ -11,7 +11,7 @@ stages:
   - pull_image
   - custom image stage
 lintstage-Lint:
-  image: ubuntu-latest
+  image: ubuntu:latest
   stage: lintstage
   script:
     - apt-get update -y
@@ -20,13 +20,13 @@ lintstage-Lint:
     - npm run lint
   needs: []
 build-Checkout:
-  image: ubuntu-latest
+  image: ubuntu:latest
   stage: build
   script:
     - echo "ANOTHER GREAT SUCCESS"
   needs: []
 build-build_docker_image:
-  image: ubuntu-latest
+  image: ubuntu:latest
   stage: build
   script:
     - docker login -u GenericDockerUserName -p $docker-password
@@ -36,7 +36,7 @@ build-build_docker_image:
   services:
     - docker:dind
 test-Unit_test:
-  image: ubuntu-latest
+  image: ubuntu:latest
   stage: test
   script:
     - npm install
@@ -46,7 +46,7 @@ test-Unit_test:
     - build-Checkout
     - build-build_docker_image
 pull_image-pull_image_from_dockerHub:
-  image: ubuntu-latest
+  image: ubuntu:latest
   stage: pull_image
   script:
     - docker login -u GenericDockerUserName -p $docker-password
