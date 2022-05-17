@@ -1,6 +1,6 @@
 {
   "name": "singularci",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "SingularCI is a DSL transpiler used to generate CI/CD configuration files for existing CI platforms",
   "bin": "dist/src/CLIModule/index.js",
   "pkg": {

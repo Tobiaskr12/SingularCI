@@ -162,7 +162,23 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
       const tasks = job.getTasks();
 
       for (let task of tasks) {
-        resultArr.push(this.buildTask(task));
+        if (task instanceof BuildDockerImage) {
+          resultArr.push(...generateBuildDockerImageTask(task));
+        }
+        
+        if (task instanceof Checkout) {
+          resultArr.push(generateCheckoutTask(task));
+        }
+        
+        if (task instanceof PullDockerImage) {
+          resultArr.push(generatePullDockerImageTask(task));
+        }
+        
+        if (task instanceof Run) {
+          resultArr.push(generateRunTask(task));
+        }
+
+
       }
     }
     return resultArr;
@@ -180,23 +196,5 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
 
   private sanitizeJobName = (name:string):string => {
     return name.replaceAll(' ','_')
-  }
-
-  private buildTask = (task:any) => {
-    if (task instanceof BuildDockerImage) {
-      return generateBuildDockerImageTask(task);
-    }
-    
-    if (task instanceof Checkout) {
-      return generateCheckoutTask(task);
-    }
-    
-    if (task instanceof PullDockerImage) {
-      return  generatePullDockerImageTask(task);
-    }
-    
-    if (task instanceof Run) {
-      return generateRunTask(task);
-    }
   }
 }
