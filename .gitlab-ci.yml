@@ -13,24 +13,34 @@ stages:
 lintstage-Lint:
   image: ubuntu-latest
   stage: lintstage
-  script: []
+  script:
+    - apt-get update -y
+    - apt-get install -y nodejs
+    - npm install
+    - npm run lint
   needs: []
 build-Checkout:
   image: ubuntu-latest
   stage: build
-  script: []
+  script:
+    - echo "ANOTHER GREAT SUCCESS"
   needs: []
 build-build_docker_image:
   image: ubuntu-latest
   stage: build
-  script: []
+  script:
+    - docker login -u GenericDockerUserName -p $docker-password
+    - docker build -t SingularCI_TestingImage ./Dockerfile
+    - docker push GenericDockerUserName/SingularCI_TestingImage
   needs: []
   services:
     - docker:dind
 test-Unit_test:
   image: ubuntu-latest
   stage: test
-  script: []
+  script:
+    - npm install
+    - npm test
   needs:
     - lintstage-Lint
     - build-Checkout
@@ -38,10 +48,13 @@ test-Unit_test:
 pull_image-pull_image_from_dockerHub:
   image: ubuntu-latest
   stage: pull_image
-  script: []
+  script:
+    - docker login -u GenericDockerUserName -p $docker-password
+    - docker pull GenericDockerUserName/SingularCI_TestingImage
   needs: []
 custom image stage-custom_image_job:
   image: node:16
   stage: custom image stage
-  script: []
+  script:
+    - echo "Im a custom image job"
   needs: []

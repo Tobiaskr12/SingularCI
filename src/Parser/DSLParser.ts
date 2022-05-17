@@ -106,8 +106,10 @@ class DSLParser{
       const variablesArray = YAML.parse(this.inputFileClone)['pipeline']['variables'];
       const variables = new Variables();
 
-      for (let variable of variablesArray) {
-        variables.addVariable(variable.key, variable.value);
+      if (variablesArray) {
+        for (let variable of variablesArray) {
+          variables.addVariable(variable.key, variable.value);
+        }
       }
 
       return variables;

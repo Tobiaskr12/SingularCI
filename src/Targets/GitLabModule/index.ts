@@ -139,7 +139,6 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
         let tasksArray: any[] = [];
         let needsArray: string[] = [];
 
-        needsArray = this.buildNeeds(needs);
         
         const jobObject:GitLabJobObject = {
           [stageKey]: {
@@ -150,8 +149,9 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
           }
         };
         
-        tasksArray = this.buildTasks(stageKey, jobObject,tasks);
-
+        tasksArray.push(...this.buildTasks(stageKey, jobObject, tasks));
+        needsArray.push(...this.buildNeeds(needs));
+        
         Object.assign(this.configObject, jobObject);
       }
     }
