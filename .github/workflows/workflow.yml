@@ -34,7 +34,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: GenericDockerUserName/SingularCI_TestingImage:latest}
+          tags: GenericDockerUserName/SingularCI_TestingImage:latest
     runs-on: ubuntu-latest
   test:
     steps:

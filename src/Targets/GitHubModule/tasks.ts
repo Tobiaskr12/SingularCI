@@ -52,7 +52,7 @@ export const generateBuildDockerImageTask = (task: BuildDockerImage) => {
       uses: "docker/build-push-action@v3",
       with: {
         push: true,
-        tags: `${task.getUserName()}/${task.getImageName()}:latest}`,
+        tags: `${task.getUserName()}/${task.getImageName()}:latest`,
       }
     }
   ] 
