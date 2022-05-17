@@ -188,7 +188,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
       }
       
       if (task instanceof Checkout) {
-        console.log("Checkout should not be specified on GitLab")
+        // Do nothing
       }
       
       if (task instanceof PullDockerImage) {
