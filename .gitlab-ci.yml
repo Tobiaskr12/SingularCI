@@ -11,24 +11,24 @@ stages:
   - pull_image
   - custom image stage
 lintstage-Lint:
-  image: ubuntu:latest
+  image: ubuntu-latest
   stage: lintstage
   script: []
   needs: []
 build-Checkout:
-  image: ubuntu:latest
+  image: ubuntu-latest
   stage: build
   script: []
   needs: []
 build-build_docker_image:
-  image: ubuntu:latest
+  image: ubuntu-latest
   stage: build
   script: []
   needs: []
   services:
     - docker:dind
 test-Unit_test:
-  image: ubuntu:latest
+  image: ubuntu-latest
   stage: test
   script: []
   needs:
@@ -36,7 +36,7 @@ test-Unit_test:
     - build-Checkout
     - build-build_docker_image
 pull_image-pull_image_from_dockerHub:
-  image: ubuntu:latest
+  image: ubuntu-latest
   stage: pull_image
   script: []
   needs: []
