@@ -23,8 +23,8 @@ export const generateBuildDockerImageTask = (task: BuildDockerImage) => {
   const commandArray: string[] = [];
 
   commandArray.push(`docker login -u ${task.getUserName()} -p ${task.getPassword()}`);
-  commandArray.push(`docker build -t ${task.getImageName()} ${task.getBuildFilePath()}`);
-  commandArray.push(`docker push ${task.getUserName()}/${task.getImageName()}`);
+  commandArray.push(`docker build --pull -t "${task.getImageName()}" ${task.getBuildFilePath()}`);
+  commandArray.push(`docker push "${task.getImageName()}"`);
   
   return commandArray;
 }
