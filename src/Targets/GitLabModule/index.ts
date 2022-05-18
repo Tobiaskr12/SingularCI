@@ -183,6 +183,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
 
     for (let task of tasks) {
       if (task instanceof BuildDockerImage) {
+        jobObject[stageKey].image = "docker:latest";
         jobObject[stageKey].services = dockerSetup()
         tasksArray.push(...generateBuildDockerImageTask(task));
       }

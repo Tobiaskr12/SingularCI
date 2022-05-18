@@ -26,7 +26,7 @@ build-Checkout:
     - echo "ANOTHER GREAT SUCCESS"
   needs: []
 build-build_docker_image:
-  image: ubuntu:latest
+  image: docker:latest
   stage: build
   script:
     - docker login -u GenericDockerUserName -p $docker-password
