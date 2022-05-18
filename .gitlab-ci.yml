@@ -23,7 +23,7 @@ build-Checkout:
   image: ubuntu:latest
   stage: build
   script:
-    - echo "ANOTHER GREAT SUCCESS"
+    - echo "Checkout task not supported for GitLab"
   needs: []
 build-build_docker_image:
   image: docker:latest

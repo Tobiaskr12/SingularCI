@@ -20,7 +20,9 @@ jobs:
     runs-on: ubuntu-latest
   build:
     steps:
-      - run: echo "ANOTHER GREAT SUCCESS"
+      - uses: actions/checkout@v3
+        with:
+          repository: testreponref
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx

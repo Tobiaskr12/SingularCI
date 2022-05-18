@@ -37,8 +37,7 @@ pipeline:
         runs_on: ubuntu-latest
         jobs:
           - name: Checkout
-            run: 
-              - echo "ANOTHER GREAT SUCCESS"
+            checkout: testreponref
           - name: build docker image
             docker_build:
               image_name: ${image_name}
