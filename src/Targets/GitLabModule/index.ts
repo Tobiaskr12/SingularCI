@@ -8,7 +8,7 @@ import BuildDockerImage from '../../SemanticModel/Tasks/BuildDockerImage';
 import Checkout from '../../SemanticModel/Tasks/Checkout';
 import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
 import Run from '../../SemanticModel/Tasks/Run';
-import { dockerSetup, generateBuildDockerImageTask, generatePullDockerImageTask, generateRunTask } from './tasks';
+import { dockerSetup, generateBuildDockerImageTask, generateCheckoutTask, generatePullDockerImageTask, generateRunTask } from './tasks';
 import { GitLabJobObject } from './types';
 
 export class GitLabConfigGenerator implements TargetPlatformGenerator {
@@ -189,7 +189,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
       }
       
       if (task instanceof Checkout) {
-        // Do nothing
+        tasksArray.push(...generateCheckoutTask(task))
       }
       
       if (task instanceof PullDockerImage) {
