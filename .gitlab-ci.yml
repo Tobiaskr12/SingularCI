@@ -30,8 +30,8 @@ build-build_docker_image:
   stage: build
   script:
     - docker login -u GenericDockerUserName -p $docker-password
-    - docker build -t SingularCI_TestingImage ./Dockerfile
-    - docker push GenericDockerUserName/SingularCI_TestingImage
+    - docker build --pull -t "SingularCI_TestingImage" ./Dockerfile
+    - docker push "SingularCI_TestingImage"
   needs: []
   services:
     - docker:dind
