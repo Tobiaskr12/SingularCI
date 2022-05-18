@@ -5,7 +5,7 @@ import Run from '../../SemanticModel/Tasks/Run';
 import Stage from '../../Common/Stage';
 
 export const generateCheckoutTask = (task: Checkout) => {
-  return;
+  return 'echo "Checkout task not supported for GitLab"';
 }
 
 export const generateRunTask = (task: Run) => {
