@@ -23,7 +23,8 @@ beforeAll(() => {
     GitHubConfigGenerator,
     GitLabConfigGenerator,
     Pipeline,
-    BuildDockerImageFactory
+    BuildDockerImageFactory,
+    TriggerFactory
   ]);
 
   Container.set('dslparser.inputFileName', './test/Parser/testfile.yml');

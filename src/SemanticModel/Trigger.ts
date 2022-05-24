@@ -1,8 +1,12 @@
 import { Service } from "typedi";
 import ITrigger from "./interfaces/ITrigger";
 
+export default interface ITriggerFactory {
+    createTrigger():ITrigger
+}
+
 @Service({ id: "TriggerFactory" })
-export class TriggerFactory {
+export class TriggerFactory implements ITriggerFactory {
     createTrigger(): ITrigger {
         return new Trigger();
     }
