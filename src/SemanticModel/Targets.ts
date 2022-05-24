@@ -20,6 +20,10 @@ export default class Targets {
         return this.targets;
     }
 
+    reset() {
+        this.targets = [];
+    }
+
     private isTargetValid(target: string): boolean{
         return this.acceptedTargets.includes(target);
     }

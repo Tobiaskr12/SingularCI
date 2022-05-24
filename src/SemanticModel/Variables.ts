@@ -20,5 +20,9 @@ export default class Variables {
     throw new Error(`Variable '${key}' not found`);
   }
 
+  reset() {
+    this.variables = {};
+  }
+
 }
 

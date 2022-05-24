@@ -59,8 +59,8 @@ export default class Pipeline {
 
     reset() {
         this.stages = [];
-        this.platformTargets = new Targets();
-        this.variables = new Variables();
-        this.trigger = new Trigger();
+        this.platformTargets.reset();
+        this.variables.reset();
+        this.trigger.reset();
     }
 }

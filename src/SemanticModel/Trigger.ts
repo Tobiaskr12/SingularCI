@@ -28,6 +28,11 @@ export default class Trigger {
         return this.branches;
     }
 
+    reset() {
+        this.types = [];
+        this.branches = [];
+    }
+
     private isTypeValid(type: string): boolean { 
         if (this.validTypes.includes(type)) {
             return true;

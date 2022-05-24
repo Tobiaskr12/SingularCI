@@ -3,7 +3,7 @@
 import 'reflect-metadata';
 import Container, { Inject, Service } from 'typedi';
 
-import { TargetPlatformGenerator } from '../Common/TargetPlatformGenerator';
+import { TargetPlatformGenerator } from '../Common/Interfaces/TargetPlatformGenerator';
 import { GitLabConfigGenerator } from '../Targets/GitLabModule';
 import { GitHubConfigGenerator } from './../Targets/GitHubModule/index';
 import fs from 'fs';
