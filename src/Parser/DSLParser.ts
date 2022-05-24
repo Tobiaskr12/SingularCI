@@ -12,7 +12,7 @@ import { TargetsFactory } from './../SemanticModel/Targets';
 import { Inject, Service } from 'typedi';
 import { JobBuilderFactory } from './JobBuilderFactory';
 import ITrigger from '../SemanticModel/interfaces/ITrigger';
-import { TriggerFactory } from '../SemanticModel/Trigger';
+import ITriggerFactory from '../SemanticModel/Trigger';
 import RunFactory from '../SemanticModel/Tasks/Run';
 import CheckoutFactory from '../SemanticModel/Tasks/Checkout';
 import ITargets from '../SemanticModel/interfaces/ITargets';
@@ -33,7 +33,7 @@ class DSLParser{
   @Inject('TargetsFactory') // @ts-ignore
   private targetsFactory: TargetsFactory;
   @Inject('TriggerFactory') // @ts-ignore
-  private triggerFactory: TriggerFactory;
+  private triggerFactory: ITriggerFactory;
   @Inject('VariablesFactory') // @ts-ignore
   private variablesFactory: VariablesFactory;
   @Inject('StageFactory') // @ts-ignore
