@@ -7,7 +7,7 @@ export default class Job{
         return this.name;
     }
 
-    getTasks():Task[]{
+    getTasks(): Task[] {
         return this.tasks;
     }
 }

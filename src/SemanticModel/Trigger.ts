@@ -20,7 +20,9 @@ class Trigger implements ITrigger {
 
     addType(type: string) {
         if (this.isTypeValid(type)) {
-            this.types.push(type);
+            if (!this.types.includes(type)) {
+                this.types.push(type);
+            }
         }
     }
 

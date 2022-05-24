@@ -27,3 +27,12 @@ pipeline:
               - npm install
               - npm run lint
     
+    - stage:
+        name: buildstage
+        runs_on: ubuntu-latest
+        needs: [lintstage]
+        jobs:
+          - name: build
+            run: 
+              - echo build done
+    

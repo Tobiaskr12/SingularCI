@@ -17,8 +17,10 @@ class Targets implements ITargets {
     private targets: string[] = [];
 
     addTarget(target:string){
-        if (this.isTargetValid(target)){
-            this.targets.push(target);
+        if (this.isTargetValid(target)) {
+            if (!this.targets.includes(target)) {
+                this.targets.push(target);
+            }
         } else {
             throw new Error(`${target} is not a valid target`);
         }
