@@ -2,14 +2,9 @@ workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
       when: always
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: always
 stages:
   - lintstage
-  - build
-  - test
-  - pull_image
-  - custom image stage
+  - buildstage
 lintstage-Lint:
   image: ubuntu:latest
   stage: lintstage
@@ -19,41 +14,10 @@ lintstage-Lint:
     - npm install
     - npm run lint
   needs: []
-build-Checkout:
+buildstage-build:
   image: ubuntu:latest
-  stage: build
+  stage: buildstage
   script:
-    - echo "Checkout task not supported for GitLab"
-  needs: []
-build-build_docker_image:
-  image: docker:latest
-  stage: build
-  script:
-    - docker login -u GenericDockerUserName -p ${{ secrets.docker-password }}
-    - docker build --pull -t "GenericDockerUserName/SingularCI_TestingImage"
-      ./Dockerfile
-    - docker push "GenericDockerUserName/SingularCI_TestingImage"
-  needs: []
-  services:
-    - docker:dind
-test-Unit_test:
-  image: ubuntu:latest
-  stage: test
-  script:
-    - npm install
-    - npm test
+    - echo build done
   needs:
     - lintstage-Lint
-    - build-Checkout
-    - build-build_docker_image
-pull_image-pull_image_from_dockerHub:
-  image: ubuntu:latest
-  stage: pull_image
-  script: []
-  needs: []
-custom image stage-custom_image_job:
-  image: node:16
-  stage: custom image stage
-  script:
-    - echo "Im a custom image job"
-  needs: []
