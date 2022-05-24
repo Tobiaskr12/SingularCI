@@ -1,3 +1,6 @@
+import { Service } from "typedi";
+
+@Service({id:'Targets'})
 export default class Targets {
     private acceptedTargets = [
         "GitHub",

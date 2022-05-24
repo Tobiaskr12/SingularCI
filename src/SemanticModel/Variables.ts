@@ -1,3 +1,6 @@
+import { Service } from "typedi";
+
+@Service({ id: "Variables" })
 export default class Variables {
   private variables: Record<string, string> = {};
 

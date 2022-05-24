@@ -1,9 +1,8 @@
-import { Service } from "typedi";
+import { Inject, Service } from "typedi";
 import Trigger from "../SemanticModel/Trigger";
 import Stage from "./Stage";
 import Targets from '../SemanticModel/Targets';
 import Variables from '../SemanticModel/Variables';
-
 
 @Service({ id: 'Pipeline' })
 export default class Pipeline {    
@@ -12,10 +11,14 @@ export default class Pipeline {
     private trigger: Trigger;
     private stages: Stage[] = [];
 
-    constructor() {
-        this.trigger = new Trigger();
-        this.platformTargets = new Targets();
-        this.variables = new Variables();
+    constructor(
+        @Inject("Trigger") trigger: Trigger,
+        @Inject("Targets") platformTargets: Targets,
+        @Inject("Variables") variables: Variables,
+    ) {
+        this.trigger = trigger;
+        this.platformTargets = platformTargets;
+        this.variables = variables;
     }
 
     setPlatformTargets(platformTargets: Targets) {

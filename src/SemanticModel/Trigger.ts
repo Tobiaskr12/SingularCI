@@ -1,3 +1,6 @@
+import { Service } from "typedi";
+
+@Service({ id: "Trigger" })
 export default class Trigger {
     private validTypes = [
         "push",
