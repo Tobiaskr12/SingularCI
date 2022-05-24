@@ -3,12 +3,6 @@ on:
     branches:
       - master
       - main
-      - refactor
-  pull_request:
-    branches:
-      - master
-      - main
-      - refactor
 jobs:
   lintstage:
     steps:
@@ -18,40 +12,9 @@ jobs:
           npm install
           npm run lint
     runs-on: ubuntu-latest
-  build:
+  buildstage:
     steps:
-      - uses: actions/checkout@v3
-        with:
-          repository: testreponref
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: GenericDockerUserName
-          password: ${{ secrets.docker-password }}
-      - name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          tags: GenericDockerUserName/SingularCI_TestingImage:latest
-    runs-on: ubuntu-latest
-  test:
-    steps:
-      - run: |
-          npm install
-          npm test
+      - run: echo build done
     runs-on: ubuntu-latest
     needs:
       - lintstage
-      - build
-  pull_image:
-    steps: []
-    runs-on: ubuntu-latest
-  custom_image_stage:
-    steps:
-      - run: echo "Im a custom image job"
-    runs-on: ubuntu-latest
-    container: node:16

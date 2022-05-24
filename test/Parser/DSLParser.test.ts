@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 
-import util from 'util'
 import { Container } from "typedi";
 import DSLParser from '../../src/Parser/DSLParser';
 import IPipeline from '../../src/SemanticModel/interfaces/IPipeline';
