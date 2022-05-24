@@ -25,21 +25,22 @@ import IPipeline from '../SemanticModel/interfaces/IPipeline';
 class DSLParser{
   private inputFileClone;
   private fileClonePath;
-  private pipeline;
-  private jobBuilderFactory;
+
+  @Inject('Pipeline') // @ts-ignore
+  private pipeline: IPipeline;
+  @Inject('JobBuilderFactory') // @ts-ignore
+  private jobBuilderFactory: JobBuilderFactory;
+  @Inject('TargetsFactory') // @ts-ignore
   private targetsFactory: TargetsFactory;
+  @Inject('TriggerFactory') // @ts-ignore
   private triggerFactory: TriggerFactory;
+  @Inject('VariablesFactory')// @ts-ignore
   private variablesFactory: VariablesFactory;
+  @Inject('StageFactory') // @ts-ignore
   private stageFactory: StageFactory;
 
   constructor(
     @Inject('dslparser.inputFileName') inputFileName: string,
-    @Inject('Pipeline') pipeline: IPipeline,
-    @Inject('JobBuilderFactory') jobBuilderFactory: JobBuilderFactory,
-    @Inject('TargetsFactory') targetsFactory: TargetsFactory,
-    @Inject('TriggerFactory') triggerFactory: TriggerFactory,
-    @Inject('VariablesFactory') variablesFactory: VariablesFactory,
-    @Inject('StageFactory') stageFactory: StageFactory
   ) {
     let inputFilePath = path.join(process.cwd(), inputFileName);
     let fileCloneName = '.singularci-copy.yml';
@@ -48,12 +49,6 @@ class DSLParser{
     fs.copyFileSync(inputFilePath, this.fileClonePath);
     
     this.inputFileClone = fs.readFileSync(this.fileClonePath, 'utf8');
-    this.pipeline = pipeline;
-    this.jobBuilderFactory = jobBuilderFactory;
-    this.targetsFactory = targetsFactory;
-    this.triggerFactory = triggerFactory;
-    this.variablesFactory = variablesFactory;
-    this.stageFactory = stageFactory;
   }
 
   parse(): IPipeline {
