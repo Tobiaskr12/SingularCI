@@ -8,7 +8,7 @@ import JobBuilder from './JobBuilder';
 import Run from '../SemanticModel/Tasks/Run';
 import BuildDockerImage from './../SemanticModel/Tasks/BuildDockerImage';
 import Job, { JobSyntaxType } from '../SemanticModel/Job';
-import Stage, { StageSyntaxType } from '../SemanticModel/Stage';
+import StageFactory, { StageSyntaxType } from '../SemanticModel/Stage';
 import { TargetsFactory } from './../SemanticModel/Targets';
 import { Inject, Service } from 'typedi';
 import { JobBuilderFactory } from './JobBuilderFactory';
@@ -30,6 +30,7 @@ class DSLParser{
   private targetsFactory: TargetsFactory;
   private triggerFactory: TriggerFactory;
   private variablesFactory: VariablesFactory;
+  private stageFactory: StageFactory;
 
   constructor(
     @Inject('dslparser.inputFileName') inputFileName: string,
@@ -37,7 +38,8 @@ class DSLParser{
     @Inject('JobBuilderFactory') jobBuilderFactory: JobBuilderFactory,
     @Inject('TargetsFactory') targetsFactory: TargetsFactory,
     @Inject('TriggerFactory') triggerFactory: TriggerFactory,
-    @Inject('VariablesFactory') variablesFactory: VariablesFactory
+    @Inject('VariablesFactory') variablesFactory: VariablesFactory,
+    @Inject('StageFactory') stageFactory: StageFactory
   ) {
     let inputFilePath = path.join(process.cwd(), inputFileName);
     let fileCloneName = '.singularci-copy.yml';
@@ -51,6 +53,7 @@ class DSLParser{
     this.targetsFactory = targetsFactory;
     this.triggerFactory = triggerFactory;
     this.variablesFactory = variablesFactory;
+    this.stageFactory = stageFactory;
   }
 
   parse(): IPipeline {
@@ -248,11 +251,11 @@ class DSLParser{
 
     for (let stage in stageSymbolTable.getStages()) {
       const stageBuilder = stageSymbolTable.getStage(stage);
-      const finalStage = new Stage(
+      const finalStage = this.stageFactory.createStage(
         stageBuilder.getName(),
         stageBuilder.getJobs(),
         stageBuilder.getNeeds(),
-        stageBuilder.getRunsOn()
+        stageBuilder.getRunsOn(),
       )
       this.pipeline.addStage(finalStage);
     }

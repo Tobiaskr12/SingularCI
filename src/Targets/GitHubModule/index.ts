@@ -8,10 +8,10 @@ import { generateBuildDockerImageTask, generateCheckoutTask, generatePullDockerI
 import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
 import Run from '../../SemanticModel/Tasks/Run';
 import { GitHubTriggerObject, StageObject } from './types';
-import Stage from '../../SemanticModel/Stage';
 import { Inject, Service } from 'typedi';
 import DSLParser from './../../Parser/DSLParser';
 import IPipeline from '../../SemanticModel/interfaces/IPipeline';
+import IStage from '../../SemanticModel/interfaces/IStage';
 
 @Service({ id: "GitHubConfigGenerator" })
 export class GitHubConfigGenerator implements TargetPlatformGenerator {
@@ -144,7 +144,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
     return str.replace(' ', '_').toLowerCase();
   }
   
-  private buildStage = (stage: Stage): StageObject => {
+  private buildStage = (stage: IStage): StageObject => {
 
     const stageObject: StageObject = {
       steps: this.buildJobs(stage.getJobs())
@@ -187,7 +187,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
     return resultArr;
   }
 
-  private setRuntimeContainer = (stage: Stage) => {
+  private setRuntimeContainer = (stage: IStage) => {
     const runsOn = stage.getRunsOn();
     
     if (runsOn != "ubuntu-latest" && runsOn != "windows-latest") {

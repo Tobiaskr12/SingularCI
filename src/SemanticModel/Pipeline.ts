@@ -1,5 +1,5 @@
 import { Inject, Service } from "typedi";
-import Stage from "./Stage";
+import IStage from "./interfaces/IStage";
 import ITargets from "./interfaces/ITargets";
 import ITrigger from "./interfaces/ITrigger";
 import IVariables from "./interfaces/IVariables";
@@ -10,7 +10,7 @@ export default class Pipeline implements IPipeline {
     private platformTargets: ITargets;
     private variables: IVariables;
     private trigger: ITrigger;
-    private stages: Stage[] = [];
+    private stages: IStage[] = [];
 
     constructor(
         @Inject("Trigger") trigger: ITrigger,
@@ -34,7 +34,7 @@ export default class Pipeline implements IPipeline {
         this.trigger = trigger;
     }
 
-    addStage(stage: Stage) {
+    addStage(stage: IStage) {
         this.stages.push(stage);
     }
 
@@ -50,11 +50,11 @@ export default class Pipeline implements IPipeline {
         return this.trigger;
     }
 
-    getStages(): Stage[] {
+    getStages(): IStage[] {
         return this.stages;
     }
 
-    setStages(stages: Stage[]) {
+    setStages(stages: IStage[]) {
         this.stages = stages;
     }
 

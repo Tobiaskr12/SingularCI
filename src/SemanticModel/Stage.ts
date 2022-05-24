@@ -1,3 +1,5 @@
+import IStage from './interfaces/IStage';
+import { Service } from 'typedi';
 import Job, { JobSyntaxType } from './Job';
 
 export type StageSyntaxType = {
@@ -7,7 +9,25 @@ export type StageSyntaxType = {
     jobs: JobSyntaxType[]
 }
 
-export default class Stage {
+@Service({ id: "StageFactory" })
+export default class StageFactory {
+    createStage(
+        stageName: string,
+        jobs: Job[],
+        needs: string[],
+        runsOn: string
+    ): IStage {
+        return new Stage(
+            stageName,
+            jobs,
+            needs,
+            runsOn
+        );
+    }
+}
+
+@Service({ id: "Stage" })
+class Stage implements IStage {
     constructor(
         private name: string,
         private jobs: Job[],
@@ -30,5 +50,4 @@ export default class Stage {
     getRunsOn(): string{
         return this.runs_on;
     }
-
 }

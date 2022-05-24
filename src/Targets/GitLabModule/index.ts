@@ -2,7 +2,6 @@ import YAML from 'yaml';
 import { TargetPlatformGenerator } from '../interfaces/TargetPlatformGenerator';
 import fs from 'fs';
 import path from 'path';
-import Stage from '../../SemanticModel/Stage';
 import BuildDockerImage from '../../SemanticModel/Tasks/BuildDockerImage';
 import Checkout from '../../SemanticModel/Tasks/Checkout';
 import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
@@ -12,6 +11,7 @@ import { GitLabJobObject } from './types';
 import { Inject, Service } from 'typedi';
 import DSLParser from './../../Parser/DSLParser';
 import IPipeline from './../../SemanticModel/interfaces/IPipeline';
+import IStage from '../../SemanticModel/interfaces/IStage';
 
 @Service({ id: "GitLabConfigGenerator" })
 export class GitLabConfigGenerator implements TargetPlatformGenerator {
@@ -53,7 +53,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
   private buildStages() {
     const stagesArray: string[] = [];
     for (let i = 0; i < this.pipeline.getStages().length; i++) { 
-      const stage: Stage = this.pipeline.getStages()[i];
+      const stage: IStage = this.pipeline.getStages()[i];
       stagesArray.push(stage.getName());
     }
 
@@ -210,7 +210,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
     return name.replaceAll(' ','_')
   }
 
-  private getSelectedImage(stage: Stage): string {
+  private getSelectedImage(stage: IStage): string {
     const runsOn = stage.getRunsOn();
 
     switch (runsOn) {
