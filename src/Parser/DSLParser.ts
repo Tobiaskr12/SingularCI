@@ -45,7 +45,6 @@ class DSLParser{
   @Inject('CheckoutFactory') //@ts-ignore
   private checkoutFactory: CheckoutFactory
   
-
   constructor(
     @Inject('dslparser.inputFileName') inputFileName: string,
   ) {

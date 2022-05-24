@@ -1,0 +1,29 @@
+pipeline:
+  targets:
+    - GitHub
+    - GitLab
+
+  variables:
+    - key: testKey
+      value: testValue
+
+  triggers: 
+    trigger_types:
+      - push
+    branches:
+      - master
+      - main
+  
+  stages:
+
+    - stage:
+        name: lintstage
+        runs_on: ubuntu-latest
+        jobs:
+          - name: Lint
+            run: 
+              - apt-get update -y
+              - apt-get install -y nodejs
+              - npm install
+              - npm run lint
+    
