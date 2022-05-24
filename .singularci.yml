@@ -34,6 +34,8 @@ pipeline:
         needs: [lint]
         runs_on: ubuntu-latest
         jobs:
+          - name: checkout repository
+            checkout: Tobiaskr12/SingularCITestProject
           - name: Unit test
             run: 
               - npm install
