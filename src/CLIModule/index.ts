@@ -4,25 +4,31 @@ import 'reflect-metadata';
 import Container, { Inject, Service } from 'typedi';
 
 import { TargetPlatformGenerator } from '../Common/TargetPlatformGenerator';
-import DSLParser from '../Parser/DSLParser';
 import { GitLabConfigGenerator } from '../Targets/GitLabModule';
 import { GitHubConfigGenerator } from './../Targets/GitHubModule/index';
 import fs from 'fs';
 
+Container.import([
+  GitHubConfigGenerator,
+  GitLabConfigGenerator
+]);
+
 @Service({ id: 'program' })
 class Program {
-  private parser: DSLParser;
-  
-  constructor(@Inject('dslparser') parser: DSLParser) {
-    this.parser = parser
+  private configGenerators: TargetPlatformGenerator[] = [];
+
+  constructor(
+    @Inject('GitHubConfigGenerator') githubConfigGenerator: TargetPlatformGenerator,
+    @Inject('GitLabConfigGenerator') gitlabConfigGenerator: TargetPlatformGenerator,
+  ) {
+    this.configGenerators.push(githubConfigGenerator);
+    this.configGenerators.push(gitlabConfigGenerator);
   }
 
   public main = () => {
-    const gitHubConfigGenerator: TargetPlatformGenerator = new GitHubConfigGenerator(this.parser.parse());
-    gitHubConfigGenerator.generateConfig();
-    
-    const gitLabConfigGenerator: TargetPlatformGenerator = new GitLabConfigGenerator(this.parser.parse());
-    gitLabConfigGenerator.generateConfig();
+    for (const configGenerator of this.configGenerators) {
+        configGenerator.generateConfig()
+    }
   }
 }
 

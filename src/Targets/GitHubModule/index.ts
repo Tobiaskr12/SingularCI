@@ -10,13 +10,16 @@ import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
 import Run from '../../SemanticModel/Tasks/Run';
 import { GitHubTriggerObject, StageObject } from './types';
 import Stage from '../../Common/Stage';
+import { Inject, Service } from 'typedi';
+import DSLParser from './../../Parser/DSLParser';
 
+@Service({ id: "GitHubConfigGenerator" })
 export class GitHubConfigGenerator implements TargetPlatformGenerator {
   private pipeline: Pipeline;
   private configObject: any;
   
-  constructor(pipeline: Pipeline) {
-    this.pipeline = pipeline;
+  constructor(@Inject('dslparser') parser: DSLParser) {
+    this.pipeline = parser.parse();
     this.configObject = {};
   }
 

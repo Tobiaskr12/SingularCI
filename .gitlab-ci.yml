@@ -29,7 +29,7 @@ build-build_docker_image:
   image: docker:latest
   stage: build
   script:
-    - docker login -u GenericDockerUserName -p $docker-password
+    - docker login -u GenericDockerUserName -p ${{ secrets.docker-password }}
     - docker build --pull -t "GenericDockerUserName/SingularCI_TestingImage"
       ./Dockerfile
     - docker push "GenericDockerUserName/SingularCI_TestingImage"
@@ -50,7 +50,7 @@ pull_image-pull_image_from_dockerHub:
   image: ubuntu:latest
   stage: pull_image
   script:
-    - docker login -u GenericDockerUserName -p $docker-password
+    - docker login -u GenericDockerUserName -p ${{ secrets.docker-password }}
     - docker pull GenericDockerUserName/SingularCI_TestingImage
   needs: []
 custom image stage-custom_image_job:
