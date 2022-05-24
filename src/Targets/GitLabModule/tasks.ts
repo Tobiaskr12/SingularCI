@@ -1,10 +1,7 @@
-
 import IBuildDockerImage from '../../SemanticModel/interfaces/IBuildDockerImage';
-import ICheckout from '../../SemanticModel/interfaces/ICheckout';
 import IRun from '../../SemanticModel/interfaces/IRun';
-import IStage from '../../SemanticModel/interfaces/IStage';
 
-export const generateCheckoutTask = (task: ICheckout) => {
+export const generateCheckoutTask = () => {
   const commandArray: string[] = [];
   commandArray.push('echo "Checkout task not supported for GitLab"');
   return commandArray;
@@ -14,7 +11,7 @@ export const generateRunTask = (task: IRun) => {
   return task.getCommands();
 }
 
-export const dockerSetup = (stage?: IStage, task?: IBuildDockerImage) => {
+export const dockerSetup = () => {
   const resultArray: string[] = [];
 
   resultArray.push("docker:dind")

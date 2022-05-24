@@ -1,10 +1,10 @@
 import Job from '../SemanticModel/Job'
 
 export default class StageBuilder {
-    private name: string = "";
+    private name = "";
     private jobs: Job[] = [];
     private needs: string[] = [];
-    private runs_on: string = "";
+    private runs_on = "";
     
     setName(name: string){
         this.name = name;

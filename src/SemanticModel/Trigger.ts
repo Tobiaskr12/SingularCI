@@ -44,7 +44,7 @@ class Trigger implements ITrigger {
     private isTypeValid(type: string): boolean { 
         if (this.validTypes.includes(type)) {
             return true;
-        };
+        }
 
         throw new Error(`${type} is not a valid trigger type`);
     }

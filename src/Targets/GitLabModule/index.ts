@@ -2,8 +2,6 @@ import YAML from 'yaml';
 import { TargetPlatformGenerator } from '../interfaces/TargetPlatformGenerator';
 import fs from 'fs';
 import path from 'path';
-import Checkout from '../../SemanticModel/Tasks/Checkout';
-import Run from '../../SemanticModel/Tasks/Run';
 import { dockerSetup, generateBuildDockerImageTask, generateCheckoutTask, generateRunTask } from './tasks';
 import { GitLabJobObject } from './types';
 import { Inject, Service } from 'typedi';
@@ -104,7 +102,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
   private changeSecretsSyntax = (obj: any) => {
     if (typeof obj === 'object') {
       // iterating over the object using for..in
-      for (var key in obj) {
+      for (const key in obj) {
         //checking if the current value is an object itself
         if (typeof obj[key] === 'object') {
           // if so then again calling the same function
@@ -115,7 +113,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
           const secrets: string[] = obj[key].match(/\$\{(secrets\.)[a-zA-Z][^{}]+\}/gm);
           if (secrets) {
             for (let i = 0; i < secrets.length; i++) {
-              let newValue = obj[key].replace(secrets[i], "$" + secrets[i].replace("${secrets.", "").replace("}", "") + "");
+              const newValue = obj[key].replace(secrets[i], "$" + secrets[i].replace("${secrets.", "").replace("}", "") + "");
               obj[key] = newValue;
             }
           }
@@ -135,11 +133,10 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
       for (let j = 0; j < jobs.length; j++) {
         const tasks = jobs[j].getTasks();
         const needs = stages[i].getNeeds();
-        const beforeTasks: any[] = [];
         const stage = stages[i];
         const stageKey = `${stage.getName()}-${this.sanitizeJobName(jobs[j].getName())}`;
-        let tasksArray: any[] = [];
-        let needsArray: string[] = [];
+        const tasksArray: any[] = [];
+        const needsArray: string[] = [];
 
         
         const jobObject:GitLabJobObject = {
@@ -183,7 +180,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
   private buildTasks = (stageKey: string, jobObject:GitLabJobObject, tasks:any):any[] => {
     const tasksArray: any[] = [];
 
-    for (let task of tasks) {
+    for (const task of tasks) {
       if (task.getType() === TaskType.BuildDockerImage) {
         jobObject[stageKey].image = "docker:latest";
         jobObject[stageKey].services = dockerSetup()
@@ -191,7 +188,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
       }
       
       if (task.getType() === TaskType.Checkout) {
-        tasksArray.push(...generateCheckoutTask(task))
+        tasksArray.push(...generateCheckoutTask())
       }
 
       if (task.getType() === TaskType.Run) {

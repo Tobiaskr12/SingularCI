@@ -20,7 +20,7 @@
     "clean": "rm -rf ./dist ./bin",
     "clean:compiled": "rm -rf ./bin",
     "clean:dist": "rm -rf ./dist",
-    "lint": "eslint ./src"
+    "lint": "eslint -c ./.eslintrc.json ./src"
   },
   "repository": {
     "type": "git",
@@ -48,7 +48,7 @@
   "devDependencies": {
     "@types/command-line-args": "^5.2.0",
     "@types/jest": "^27.4.0",
-    "@types/node": "^17.0.13",
+    "@types/node": "^17.0.35",
     "@typescript-eslint/eslint-plugin": "^5.10.1",
     "@typescript-eslint/parser": "^5.10.1",
     "eslint": "^8.8.0",

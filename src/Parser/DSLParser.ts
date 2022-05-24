@@ -49,8 +49,8 @@ class DSLParser{
   constructor(
     @Inject('dslparser.inputFileName') inputFileName: string,
   ) {
-    let inputFilePath = path.join(process.cwd(), inputFileName);
-    let fileCloneName = '.singularci-copy.yml';
+    const inputFilePath = path.join(process.cwd(), inputFileName);
+    const fileCloneName = '.singularci-copy.yml';
     this.fileClonePath = path.join(process.cwd(), fileCloneName);
     
     fs.copyFileSync(inputFilePath, this.fileClonePath);
@@ -64,7 +64,7 @@ class DSLParser{
     
     const targets = this.buildTargets();
     const triggers = this.buildTriggers();
-    const stages = this.buildStages();;
+    const stages = this.buildStages();
 
     this.buildSymbolTable(stages);
 
@@ -72,12 +72,12 @@ class DSLParser{
   }
 
   private resolveVariables(variables: IVariables): void {
-    for (let variable in variables.getVariables()) {
+    for (const variable in variables.getVariables()) {
       this.inputFileClone = this.inputFileClone.replaceAll("${" + variable + "}", variables.getVariable(variable));
     }
 
     // The regex tests if there are any undeclared variables in the file, which are not platform specific secrets
-    let undefinedVariables = this.inputFileClone.match(/\$\{(?!secrets\.)[a-zA-Z][^{}]+\}/gm);
+    const undefinedVariables = this.inputFileClone.match(/\$\{(?!secrets\.)[a-zA-Z][^{}]+\}/gm);
 
     if (undefinedVariables != null) {
       throw new Error(`Error: The following variable(s) are used, but not declared: ${undefinedVariables}`);
@@ -89,7 +89,7 @@ class DSLParser{
       const targetsArray = YAML.parse(this.inputFileClone)['pipeline']['targets']; 
       const targets = this.targetsFactory.createTargets();
       
-      for (let target of targetsArray) {
+      for (const target of targetsArray) {
         targets.addTarget(target);
       }
 
@@ -104,11 +104,11 @@ class DSLParser{
       const triggersArray = YAML.parse(this.inputFileClone)['pipeline']['triggers'];
       const triggers = this.triggerFactory.createTrigger();
 
-      for (let triggerTypes of triggersArray.trigger_types) {
+      for (const triggerTypes of triggersArray.trigger_types) {
         triggers.addType(triggerTypes);
       }
 
-      for (let triggerBranch of triggersArray.branches) {
+      for (const triggerBranch of triggersArray.branches) {
         triggers.addBranch(triggerBranch);
       }
       
@@ -124,7 +124,7 @@ class DSLParser{
       const variables = this.variablesFactory.createVariables();
 
       if (variablesArray) {
-        for (let variable of variablesArray) {
+        for (const variable of variablesArray) {
           variables.addVariable(variable.key, variable.value);
         }
       }
@@ -140,7 +140,7 @@ class DSLParser{
       const stages = YAML.parse(this.inputFileClone)['pipeline']['stages'];
       const stageList: StageBuilder[] = [];
 
-      for (let stageObject of stages) {
+      for (const stageObject of stages) {
         stageList.push(this.buildStage(stageObject.stage));
       }
 
@@ -154,7 +154,7 @@ class DSLParser{
     const stageSymbolTable = StageSymbolTable.getInstance();
     stageSymbolTable.reset();
 
-    for (let stage of stages) { 
+    for (const stage of stages) { 
       stageSymbolTable.addStage(stage);
     }
   }
@@ -180,14 +180,14 @@ class DSLParser{
 
   private addNeedsToStage(stage: StageSyntaxType, stageBuilder: StageBuilder) {
     if (stage.needs) {
-      for (let need of stage.needs) {
+      for (const need of stage.needs) {
         stageBuilder.addNeeds(need);
       }
     }
   }
 
   private buildJobs(stage: StageSyntaxType, stageBuilder: StageBuilder) {
-    for (let job of stage.jobs) {
+    for (const job of stage.jobs) {
       const jobBuilder = this.jobBuilderFactory.createJobBuilder();
 
       jobBuilder.setName(job.name);
@@ -238,7 +238,7 @@ class DSLParser{
     
     this.pipeline.reset();
 
-    for (let stage in stageSymbolTable.getStages()) {
+    for (const stage in stageSymbolTable.getStages()) {
       const stageBuilder = stageSymbolTable.getStage(stage);
       const finalStage = this.stageFactory.createStage(
         stageBuilder.getName(),

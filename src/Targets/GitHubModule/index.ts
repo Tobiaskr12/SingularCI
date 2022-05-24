@@ -94,7 +94,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
   private changeSecretsSyntax = (obj: any) => {
     if (typeof obj === 'object') {
       // iterating over the object using for..in
-      for (let key in obj) {
+      for (const key in obj) {
         //checking if the current value is an object itself
         if (typeof obj[key] === 'object') {
           // if so then again calling the same function
@@ -106,7 +106,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
             
             if (secrets) {
               for (let i = 0; i < secrets.length; i++) {
-                let newValue = obj[key].replace(
+                const newValue = obj[key].replace(
                   secrets[i], "${{ " + secrets[i].replace("${", "").replace("}", "") + " }}"
                   );
                 obj[key] = newValue;
@@ -127,7 +127,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
       jobs: StagesArray
     };
 
-    for (let stage of this.pipeline.getStages()) { 
+    for (const stage of this.pipeline.getStages()) { 
       const builtStage = this.buildStage(stage);
       const stageId = this.generateStageId(this.sanitizeJobName(stage.getName()));
       stagesObject.jobs[stageId] = builtStage; 
@@ -151,17 +151,17 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
     
     if (stage.getNeeds().length > 0) {
       stageObject.needs = stage.getNeeds();
-    };
+    }
 
     return stageObject;
   }
   
   private buildJobs = (jobs: any) => {
     const resultArr: any[] = []
-    for (let job of jobs) {
+    for (const job of jobs) {
       const tasks = job.getTasks();
 
-      for (let task of tasks) {
+      for (const task of tasks) {
         if (task.getType() === TaskType.BuildDockerImage) {
           resultArr.push(...generateBuildDockerImageTask(task));
         }

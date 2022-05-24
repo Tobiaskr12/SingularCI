@@ -1,11 +1,10 @@
 import { Service } from "typedi";
 import Task from "../SemanticModel/interfaces/Task";
-import IRun from './../SemanticModel/interfaces/IRun';
 
 @Service({ id: 'JobBuilder' })
 export default class JobBuilder {
     private tasks: Task[] = [];
-    private name: string = "";
+    private name = "";
 
     setName(name: string) {
         this.name = name;
