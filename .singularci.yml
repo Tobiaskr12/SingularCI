@@ -23,7 +23,7 @@ pipeline:
         runs_on: node:16
         jobs:
           - name: checkout repository
-            checkout: Tobiaskr12/SingularCITestProject
+            checkout: Tobiaskr12/SingularCI
           - name: run eslint
             run: 
               - npm install
@@ -35,7 +35,7 @@ pipeline:
         runs_on: ubuntu-latest
         jobs:
           - name: checkout repository
-            checkout: Tobiaskr12/SingularCITestProject
+            checkout: Tobiaskr12/SingularCI
           - name: Unit test
             run: 
               - npm install

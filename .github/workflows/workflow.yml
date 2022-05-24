@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: Tobiaskr12/SingularCITestProject
+          repository: Tobiaskr12/SingularCI
       - run: |
           npm install
           npm run lint
@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: Tobiaskr12/SingularCITestProject
+          repository: Tobiaskr12/SingularCI
       - run: |
           npm install
           npm test
