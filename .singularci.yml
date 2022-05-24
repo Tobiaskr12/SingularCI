@@ -31,7 +31,7 @@ pipeline:
 
     - stage:
         name: test
-        needs: [lintstage, build]
+        needs: [lint]
         runs_on: ubuntu-latest
         jobs:
           - name: Unit test
@@ -41,6 +41,7 @@ pipeline:
 
     - stage:
         name: build
+        needs: [test]
         runs_on: ubuntu-latest
         jobs:
           - name: execute docker build
