@@ -1,7 +1,20 @@
 import { Service } from "typedi";
 
+export default interface ITargets {
+    addTarget(target: string): void;
+    getTargets(): string[];
+    reset(): void;
+}
+
+@Service({ id: "TargetsFactory" })
+export class TargetsFactory { 
+    createTargets(): ITargets { 
+        return new Targets();
+    }
+}
+
 @Service({id:'Targets'})
-export default class Targets {
+class Targets implements ITargets {
     private acceptedTargets = [
         "GitHub",
         "GitLab",

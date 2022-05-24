@@ -10,7 +10,7 @@ import BuildDockerImage from './../SemanticModel/Tasks/BuildDockerImage';
 import Job, { JobSyntaxType } from '../Common/Job';
 import Stage, { StageSyntaxType } from '../Common/Stage';
 import Pipeline from '../Common/Pipeline';
-import Targets from './../SemanticModel/Targets';
+import Targets, { TargetsFactory } from './../SemanticModel/Targets';
 import Variables from './../SemanticModel/Variables';
 import Trigger from '../SemanticModel/Trigger';
 import { Inject, Service } from 'typedi';
@@ -24,11 +24,13 @@ class DSLParser{
   private fileClonePath;
   private pipeline;
   private jobBuilderFactory;
+  private targetsFactory: TargetsFactory;
 
   constructor(
     @Inject('dslparser.inputFileName') inputFileName: string,
     @Inject('Pipeline') pipeline: Pipeline,
-    @Inject('JobBuilderFactory') jobBuilderFactory: JobBuilderFactory
+    @Inject('JobBuilderFactory') jobBuilderFactory: JobBuilderFactory,
+    @Inject('TargetsFactory') targetsFactory: TargetsFactory
   ) {
     let inputFilePath = path.join(process.cwd(), inputFileName);
     let fileCloneName = '.singularci-copy.yml';
@@ -39,6 +41,7 @@ class DSLParser{
     this.inputFileClone = fs.readFileSync(this.fileClonePath, 'utf8');
     this.pipeline = pipeline;
     this.jobBuilderFactory = jobBuilderFactory;
+    this.targetsFactory = targetsFactory;
   }
 
   parse(): Pipeline {
@@ -70,7 +73,7 @@ class DSLParser{
   private buildTargets(): Targets {
     try {
       const targetsArray = YAML.parse(this.inputFileClone)['pipeline']['targets']; 
-      const targets = new Targets();
+      const targets = this.targetsFactory.createTargets();
       
       for (let target of targetsArray) {
         targets.addTarget(target);
