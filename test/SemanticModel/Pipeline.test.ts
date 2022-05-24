@@ -1,12 +1,12 @@
 import IPipeline from "../../src/SemanticModel/interfaces/IPipeline";
 import ITargets from "../../src/SemanticModel/interfaces/ITargets";
+import ITrigger from "../../src/SemanticModel/interfaces/ITrigger";
+import IVariables from "../../src/SemanticModel/interfaces/IVariables";
 import Pipeline from "../../src/SemanticModel/Pipeline";
 import StageFactory from "../../src/SemanticModel/Stage";
 import { TargetsFactory } from "../../src/SemanticModel/Targets";
 import { TriggerFactory } from "../../src/SemanticModel/Trigger";
 import VariablesFactory from "../../src/SemanticModel/Variables";
-import ITrigger from './../../dist/src/Common/Interfaces/ITrigger.d';
-import IVariables from './../../dist/src/Common/Interfaces/IVariables.d';
 
 let pipeline: IPipeline;
 let trigger: ITrigger;
