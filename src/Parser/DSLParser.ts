@@ -10,13 +10,16 @@ import BuildDockerImage from './../SemanticModel/Tasks/BuildDockerImage';
 import Job, { JobSyntaxType } from '../Common/Job';
 import Stage, { StageSyntaxType } from '../Common/Stage';
 import Pipeline from '../Common/Pipeline';
-import Targets, { TargetsFactory } from './../SemanticModel/Targets';
-import Variables from './../SemanticModel/Variables';
-import Trigger from '../SemanticModel/Trigger';
+import { TargetsFactory } from './../SemanticModel/Targets';
 import { Inject, Service } from 'typedi';
 import { JobBuilderFactory } from './JobBuilderFactory';
 import PullDockerImage from '../SemanticModel/Tasks/PullDockerImage';
 import Checkout from '../SemanticModel/Tasks/Checkout';
+import ITrigger from '../Common/Interfaces/ITrigger';
+import { TriggerFactory } from '../SemanticModel/Trigger';
+import ITargets from '../Common/Interfaces/ITargets';
+import IVariables from '../Common/Interfaces/IVariables';
+import VariablesFactory from './../SemanticModel/Variables';
 
 @Service({ id: 'dslparser' })
 class DSLParser{
@@ -25,12 +28,16 @@ class DSLParser{
   private pipeline;
   private jobBuilderFactory;
   private targetsFactory: TargetsFactory;
+  private triggerFactory: TriggerFactory;
+  private variablesFactory: VariablesFactory;
 
   constructor(
     @Inject('dslparser.inputFileName') inputFileName: string,
     @Inject('Pipeline') pipeline: Pipeline,
     @Inject('JobBuilderFactory') jobBuilderFactory: JobBuilderFactory,
-    @Inject('TargetsFactory') targetsFactory: TargetsFactory
+    @Inject('TargetsFactory') targetsFactory: TargetsFactory,
+    @Inject('TriggerFactory') triggerFactory: TriggerFactory,
+    @Inject('VariablesFactory') variablesFactory: VariablesFactory
   ) {
     let inputFilePath = path.join(process.cwd(), inputFileName);
     let fileCloneName = '.singularci-copy.yml';
@@ -42,6 +49,8 @@ class DSLParser{
     this.pipeline = pipeline;
     this.jobBuilderFactory = jobBuilderFactory;
     this.targetsFactory = targetsFactory;
+    this.triggerFactory = triggerFactory;
+    this.variablesFactory = variablesFactory;
   }
 
   parse(): Pipeline {
@@ -57,7 +66,7 @@ class DSLParser{
     return this.buildPipeline(targets, variables, triggers);
   }
 
-  private resolveVariables(variables: Variables): void {
+  private resolveVariables(variables: IVariables): void {
     for (let variable in variables.getVariables()) {
       this.inputFileClone = this.inputFileClone.replaceAll("${" + variable + "}", variables.getVariable(variable));
     }
@@ -70,7 +79,7 @@ class DSLParser{
     }
   }
 
-  private buildTargets(): Targets {
+  private buildTargets(): ITargets {
     try {
       const targetsArray = YAML.parse(this.inputFileClone)['pipeline']['targets']; 
       const targets = this.targetsFactory.createTargets();
@@ -85,10 +94,10 @@ class DSLParser{
     }
   }
   
-  private buildTriggers(): Trigger {
+  private buildTriggers(): ITrigger {
     try {
       const triggersArray = YAML.parse(this.inputFileClone)['pipeline']['triggers'];
-      const triggers = new Trigger();
+      const triggers = this.triggerFactory.createTrigger();
 
       for (let triggerTypes of triggersArray.trigger_types) {
         triggers.addType(triggerTypes);
@@ -104,10 +113,10 @@ class DSLParser{
     }
   }
 
-  private buildVariables(): Variables {
+  private buildVariables(): IVariables {
     try {
       const variablesArray = YAML.parse(this.inputFileClone)['pipeline']['variables'];
-      const variables = new Variables();
+      const variables = this.variablesFactory.createVariables();
 
       if (variablesArray) {
         for (let variable of variablesArray) {
@@ -232,7 +241,7 @@ class DSLParser{
     return checkout;
   }
 
-  private buildPipeline(targets: Targets, variables: Variables, trigger: Trigger): Pipeline {
+  private buildPipeline(targets: ITargets, variables: IVariables, trigger: ITrigger): Pipeline {
     const stageSymbolTable = StageSymbolTable.getInstance();
     
     this.pipeline.reset();

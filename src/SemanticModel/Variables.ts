@@ -1,7 +1,15 @@
 import { Service } from "typedi";
+import IVariables from "../Common/Interfaces/IVariables";
+
+@Service({ id: "VariablesFactory" })
+export default class VariablesFactory {
+  createVariables(): IVariables {
+    return new Variables();
+  }
+}
 
 @Service({ id: "Variables" })
-export default class Variables {
+class Variables implements IVariables {
   private variables: Record<string, string> = {};
 
   addVariable(key:string, value:string) {
