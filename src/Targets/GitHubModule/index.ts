@@ -2,16 +2,13 @@ import YAML from 'yaml';
 import fs from 'fs';
 import path from 'path';
 import { TargetPlatformGenerator } from '../interfaces/TargetPlatformGenerator';
-import BuildDockerImage from '../../SemanticModel/Tasks/BuildDockerImage';
-import Checkout from '../../SemanticModel/Tasks/Checkout';
-import { generateBuildDockerImageTask, generateCheckoutTask, generatePullDockerImageTask, generateRunTask } from './tasks';
-import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
-import Run from '../../SemanticModel/Tasks/Run';
+import { generateBuildDockerImageTask, generateCheckoutTask, generateRunTask } from './tasks';
 import { GitHubTriggerObject, StageObject } from './types';
 import { Inject, Service } from 'typedi';
 import DSLParser from './../../Parser/DSLParser';
 import IPipeline from '../../SemanticModel/interfaces/IPipeline';
 import IStage from '../../SemanticModel/interfaces/IStage';
+import { TaskType } from '../../SemanticModel/Tasks/TaskEnum';
 
 @Service({ id: "GitHubConfigGenerator" })
 export class GitHubConfigGenerator implements TargetPlatformGenerator {
@@ -104,7 +101,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
           this.changeSecretsSyntax(obj[key])
         } else {
           // else getting the value and replacing single { with {{ and so on
-          if (obj[key] !== undefined) {
+          if (obj[key] !== undefined && isNaN(obj[key])) {
             const secrets: string[] = obj[key].match(/\$\{(secrets\.)[a-zA-Z][^{}]+\}/gm);
             
             if (secrets) {
@@ -165,23 +162,17 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
       const tasks = job.getTasks();
 
       for (let task of tasks) {
-        if (task instanceof BuildDockerImage) {
+        if (task.getType() === TaskType.BuildDockerImage) {
           resultArr.push(...generateBuildDockerImageTask(task));
         }
         
-        if (task instanceof Checkout) {
+        if (task.getType() === TaskType.Checkout) {
           resultArr.push(generateCheckoutTask(task));
         }
         
-        if (task instanceof PullDockerImage) {
-          resultArr.push(generatePullDockerImageTask(task));
-        }
-        
-        if (task instanceof Run) {
+        if (task.getType() === TaskType.Run) {
           resultArr.push(generateRunTask(task));
         }
-
-
       }
     }
     return resultArr;

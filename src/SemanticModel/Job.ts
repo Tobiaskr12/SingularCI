@@ -1,4 +1,4 @@
-import Task from './Task';
+import Task from './interfaces/Task';
 
 export default class Job{
     constructor(private name: string, private tasks: Task[]){}

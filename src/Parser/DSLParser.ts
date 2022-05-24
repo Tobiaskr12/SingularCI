@@ -1,25 +1,25 @@
-import { dockerBuildSyntax, dockerPullSyntax } from '../SemanticModel/Job';
+import { dockerBuildSyntax } from '../SemanticModel/Job';
 import YAML from 'yaml';
 import fs from 'fs';
 import path from 'path';
 import StageSymbolTable from './StageSymbolTable';
 import StageBuilder from './StageBuilder';
 import JobBuilder from './JobBuilder';
-import Run from '../SemanticModel/Tasks/Run';
-import BuildDockerImage from './../SemanticModel/Tasks/BuildDockerImage';
+import { BuildDockerImageFactory } from './../SemanticModel/Tasks/BuildDockerImage';
 import Job, { JobSyntaxType } from '../SemanticModel/Job';
 import StageFactory, { StageSyntaxType } from '../SemanticModel/Stage';
 import { TargetsFactory } from './../SemanticModel/Targets';
 import { Inject, Service } from 'typedi';
 import { JobBuilderFactory } from './JobBuilderFactory';
-import PullDockerImage from '../SemanticModel/Tasks/PullDockerImage';
-import Checkout from '../SemanticModel/Tasks/Checkout';
 import ITrigger from '../SemanticModel/interfaces/ITrigger';
 import { TriggerFactory } from '../SemanticModel/Trigger';
+import RunFactory from '../SemanticModel/Tasks/Run';
+import CheckoutFactory from '../SemanticModel/Tasks/Checkout';
 import ITargets from '../SemanticModel/interfaces/ITargets';
 import VariablesFactory from './../SemanticModel/Variables';
 import IVariables from '../SemanticModel/interfaces/IVariables';
 import IPipeline from '../SemanticModel/interfaces/IPipeline';
+import Task from '../SemanticModel/interfaces/Task';
 
 @Service({ id: 'dslparser' })
 class DSLParser{
@@ -34,10 +34,17 @@ class DSLParser{
   private targetsFactory: TargetsFactory;
   @Inject('TriggerFactory') // @ts-ignore
   private triggerFactory: TriggerFactory;
-  @Inject('VariablesFactory')// @ts-ignore
+  @Inject('VariablesFactory') // @ts-ignore
   private variablesFactory: VariablesFactory;
   @Inject('StageFactory') // @ts-ignore
   private stageFactory: StageFactory;
+  @Inject('BuildDockerImageFactory') // @ts-ignore
+  private buildDockerImageFactory: BuildDockerImageFactory;
+  @Inject('RunFactory') // @ts-ignore
+  private runFactory: RunFactory;
+  @Inject('CheckoutFactory') //@ts-ignore
+  private checkoutFactory: CheckoutFactory
+  
 
   constructor(
     @Inject('dslparser.inputFileName') inputFileName: string,
@@ -194,29 +201,25 @@ class DSLParser{
 
   private addTasksToJob(job: JobSyntaxType, jobBuilder: JobBuilder) {
     if (job.run) {
-      jobBuilder.addTask(this.createRunTask(job.run));
+      jobBuilder.addTask(this.generateRunTask(job.run));
     } 
     
     if (job.docker_build) { 
-      jobBuilder.addTask(this.createDockerBuildTask(job.docker_build));
-    }
-
-    if (job.docker_pull) { 
-      jobBuilder.addTask(this.createDockerPullTask(job.docker_pull));
+      jobBuilder.addTask(this.generateDockerBuildTask(job.docker_build));
     }
 
     if (job.checkout) {
-      jobBuilder.addTask(this.createCheckoutTask(job.checkout));
+      jobBuilder.addTask(this.generateCheckoutTask(job.checkout));
     }
   }
 
-  private createRunTask(command: string[]): Run {
-    const run = new Run(command);
+  private generateRunTask(commands: string[]): Task {
+    const run = this.runFactory.createRunTask(commands);
     return run;
   }
 
-  private createDockerBuildTask(job: dockerBuildSyntax): BuildDockerImage {
-    const docker_build = new BuildDockerImage(
+  private generateDockerBuildTask(job: dockerBuildSyntax): Task {
+    const docker_build = this.buildDockerImageFactory.createBuildDockerImageTask(
       job.image_name,
       job.docker_file_path,
       job.user_name,
@@ -225,17 +228,8 @@ class DSLParser{
     return docker_build;
   }
 
-  private createDockerPullTask(job: dockerPullSyntax): PullDockerImage {
-    const docker_pull = new PullDockerImage(
-      job.image_name,
-      job.user_name,
-      job.password
-    )
-    return docker_pull;
-  }
-
-  private createCheckoutTask(repo_url: string): Checkout {
-    const checkout = new Checkout(repo_url);
+  private generateCheckoutTask(repo_url: string): Task {
+    const checkout = this.checkoutFactory.createCheckoutTask(repo_url);
     return checkout;
   }
 

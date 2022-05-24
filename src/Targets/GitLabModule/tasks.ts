@@ -1,39 +1,32 @@
-import Checkout from './../../SemanticModel/Tasks/Checkout';
-import BuildDockerImage from './../../SemanticModel/Tasks/BuildDockerImage';
-import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
-import Run from '../../SemanticModel/Tasks/Run';
-import Stage from '../../SemanticModel/Stage';
 
-export const generateCheckoutTask = (task: Checkout) => {
+import IBuildDockerImage from '../../SemanticModel/interfaces/IBuildDockerImage';
+import ICheckout from '../../SemanticModel/interfaces/ICheckout';
+import IRun from '../../SemanticModel/interfaces/IRun';
+import IStage from '../../SemanticModel/interfaces/IStage';
+
+export const generateCheckoutTask = (task: ICheckout) => {
   const commandArray: string[] = [];
   commandArray.push('echo "Checkout task not supported for GitLab"');
   return commandArray;
 }
 
-export const generateRunTask = (task: Run) => {
+export const generateRunTask = (task: IRun) => {
   return task.getCommands();
 }
 
-export const dockerSetup = (stage?: Stage, task?: BuildDockerImage) => {
+export const dockerSetup = (stage?: IStage, task?: IBuildDockerImage) => {
   const resultArray: string[] = [];
 
   resultArray.push("docker:dind")
   return resultArray;
 }
 
-export const generateBuildDockerImageTask = (task: BuildDockerImage) => {
+export const generateBuildDockerImageTask = (task: IBuildDockerImage) => {
   const commandArray: string[] = [];
 
   commandArray.push(`docker login -u ${task.getUserName()} -p ${task.getPassword()}`);
   commandArray.push(`docker build --pull -t "${task.getUserName()}/${task.getImageName()}" ${task.getBuildFilePath()}`);
   commandArray.push(`docker push "${task.getUserName()}/${task.getImageName()}"`);
   
-  return commandArray;
-}
-
-export const generatePullDockerImageTask = (task: PullDockerImage) => {
-  const commandArray: string[] = [];
-  commandArray.push(`docker login -u ${task.getUserName()} -p ${task.getPassword()}`);
-  commandArray.push(`docker pull ${task.getImageName()}` )
   return commandArray;
 }

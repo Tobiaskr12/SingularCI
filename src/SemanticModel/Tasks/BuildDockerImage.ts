@@ -1,6 +1,28 @@
-import Task from '../Task';
+import { Service } from 'typedi';
+import IBuildDockerImage from '../interfaces/IBuildDockerImage';
+import Task from '../interfaces/Task';
+import { TaskType } from './TaskEnum';
 
-export default class BuildDockerImage implements Task {
+@Service({ id: 'BuildDockerImageFactory' })
+export class BuildDockerImageFactory {
+  createBuildDockerImageTask(
+    imageName: string,
+    dockerFilePath: string,
+    userName: string,
+    password: string,
+  ) {
+    return new BuildDockerImage(
+      imageName,
+      dockerFilePath,
+      userName,
+      password,
+    );
+  }
+}
+
+class BuildDockerImage implements Task, IBuildDockerImage {
+
+  type = TaskType.BuildDockerImage;
 
   constructor(
     private imageName: string,
@@ -23,6 +45,10 @@ export default class BuildDockerImage implements Task {
 
   getPassword(): string {
     return this.password;
+  }
+
+  getType(): TaskType {
+    return this.type;
   }
 
 }

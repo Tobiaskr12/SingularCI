@@ -2,16 +2,15 @@ import YAML from 'yaml';
 import { TargetPlatformGenerator } from '../interfaces/TargetPlatformGenerator';
 import fs from 'fs';
 import path from 'path';
-import BuildDockerImage from '../../SemanticModel/Tasks/BuildDockerImage';
 import Checkout from '../../SemanticModel/Tasks/Checkout';
-import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
 import Run from '../../SemanticModel/Tasks/Run';
-import { dockerSetup, generateBuildDockerImageTask, generateCheckoutTask, generatePullDockerImageTask, generateRunTask } from './tasks';
+import { dockerSetup, generateBuildDockerImageTask, generateCheckoutTask, generateRunTask } from './tasks';
 import { GitLabJobObject } from './types';
 import { Inject, Service } from 'typedi';
 import DSLParser from './../../Parser/DSLParser';
 import IPipeline from './../../SemanticModel/interfaces/IPipeline';
 import IStage from '../../SemanticModel/interfaces/IStage';
+import { TaskType } from '../../SemanticModel/Tasks/TaskEnum';
 
 @Service({ id: "GitLabConfigGenerator" })
 export class GitLabConfigGenerator implements TargetPlatformGenerator {
@@ -112,7 +111,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
           this.changeSecretsSyntax(obj[key])
         } else {
           // else getting the value and replacing single { with {{ and so on
-          if (obj[key] !== undefined) {
+          if (obj[key] !== undefined && isNaN(obj[key])) {
           const secrets: string[] = obj[key].match(/\$\{(secrets\.)[a-zA-Z][^{}]+\}/gm);
           if (secrets) {
             for (let i = 0; i < secrets.length; i++) {
@@ -185,21 +184,17 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
     const tasksArray: any[] = [];
 
     for (let task of tasks) {
-      if (task instanceof BuildDockerImage) {
+      if (task.getType() === TaskType.BuildDockerImage) {
         jobObject[stageKey].image = "docker:latest";
         jobObject[stageKey].services = dockerSetup()
         tasksArray.push(...generateBuildDockerImageTask(task));
       }
       
-      if (task instanceof Checkout) {
+      if (task.getType() === TaskType.Checkout) {
         tasksArray.push(...generateCheckoutTask(task))
       }
-      
-      if (task instanceof PullDockerImage) {
-        tasksArray.push(...generatePullDockerImageTask(task));
-      }
 
-      if (task instanceof Run) {
+      if (task.getType() === TaskType.Run) {
         tasksArray.push(...generateRunTask(task));
       }
     }

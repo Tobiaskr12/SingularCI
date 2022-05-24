@@ -49,9 +49,7 @@ test-Unit_test:
 pull_image-pull_image_from_dockerHub:
   image: ubuntu:latest
   stage: pull_image
-  script:
-    - docker login -u GenericDockerUserName -p ${{ secrets.docker-password }}
-    - docker pull GenericDockerUserName/SingularCI_TestingImage
+  script: []
   needs: []
 custom image stage-custom_image_job:
   image: node:16

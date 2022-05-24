@@ -1,9 +1,8 @@
-import Checkout from './../../SemanticModel/Tasks/Checkout';
-import BuildDockerImage from './../../SemanticModel/Tasks/BuildDockerImage';
-import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
-import Run from '../../SemanticModel/Tasks/Run';
+import ICheckout from "../../SemanticModel/interfaces/ICheckout";
+import IRun from "../../SemanticModel/interfaces/IRun";
+import IBuildDockerImage from './../../SemanticModel/interfaces/IBuildDockerImage';
 
-export const generateCheckoutTask = (task: Checkout) => {
+export const generateCheckoutTask = (task: ICheckout) => {
   return {
     uses: 'actions/checkout@v3',
     with: {
@@ -12,7 +11,7 @@ export const generateCheckoutTask = (task: Checkout) => {
   }
 }
 
-export const generateRunTask = (task: Run) => {
+export const generateRunTask = (task: IRun) => {
   let runCommand = "";
 
   if (task.getCommands().length == 1) { 
@@ -28,7 +27,7 @@ export const generateRunTask = (task: Run) => {
   }
 }
 
-export const generateBuildDockerImageTask = (task: BuildDockerImage) => {
+export const generateBuildDockerImageTask = (task: IBuildDockerImage) => {
   return [
     {
       name: "Set up QEMU",
@@ -56,17 +55,4 @@ export const generateBuildDockerImageTask = (task: BuildDockerImage) => {
       }
     }
   ] 
-}
-
-export const generatePullDockerImageTask = (task: PullDockerImage) => { 
-  return {
-    uses: "djbender/docker-buildx-pull-or-build@v0.5",
-    with: {
-      docker_username: task.getUserName(),
-      docker_password: task.getPassword(),
-      // will pull if dockerfile path is left empty
-      dockerfile: "",
-      image: task.getImageName()
-    }
-  }
 }

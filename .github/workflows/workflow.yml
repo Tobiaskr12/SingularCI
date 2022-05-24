@@ -48,13 +48,7 @@ jobs:
       - lintstage
       - build
   pull_image:
-    steps:
-      - uses: djbender/docker-buildx-pull-or-build@v0.5
-        with:
-          docker_username: GenericDockerUserName
-          docker_password: ${{ secrets.docker-password }}
-          dockerfile: ""
-          image: GenericDockerUserName/SingularCI_TestingImage
+    steps: []
     runs-on: ubuntu-latest
   custom_image_stage:
     steps:
