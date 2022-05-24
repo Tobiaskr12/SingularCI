@@ -1,4 +1,4 @@
-import Job from '../Common/Job'
+import Job from '../SemanticModel/Job'
 
 export default class StageBuilder {
     private name: string = "";

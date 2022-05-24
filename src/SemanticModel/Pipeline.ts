@@ -1,11 +1,12 @@
 import { Inject, Service } from "typedi";
 import Stage from "./Stage";
-import ITargets from "../SemanticModel/interfaces/ITargets";
-import ITrigger from "../SemanticModel/interfaces/ITrigger";
-import IVariables from "../SemanticModel/interfaces/IVariables";
+import ITargets from "./interfaces/ITargets";
+import ITrigger from "./interfaces/ITrigger";
+import IVariables from "./interfaces/IVariables";
+import IPipeline from "./interfaces/IPipeline";
 
 @Service({ id: 'Pipeline' })
-export default class Pipeline {    
+export default class Pipeline implements IPipeline {    
     private platformTargets: ITargets;
     private variables: IVariables;
     private trigger: ITrigger;

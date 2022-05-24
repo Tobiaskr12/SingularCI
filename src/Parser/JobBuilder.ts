@@ -1,5 +1,5 @@
 import { Service } from "typedi";
-import Task from "../Common/Task";
+import Task from "../SemanticModel/Task";
 
 @Service({ id: 'JobBuilder' })
 export default class JobBuilder{

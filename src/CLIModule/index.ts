@@ -7,10 +7,12 @@ import { TargetPlatformGenerator } from '../Targets/interfaces/TargetPlatformGen
 import { GitLabConfigGenerator } from '../Targets/GitLabModule';
 import { GitHubConfigGenerator } from './../Targets/GitHubModule/index';
 import fs from 'fs';
+import Pipeline from '../SemanticModel/Pipeline';
 
 Container.import([
   GitHubConfigGenerator,
-  GitLabConfigGenerator
+  GitLabConfigGenerator,
+  Pipeline
 ]);
 
 @Service({ id: 'program' })

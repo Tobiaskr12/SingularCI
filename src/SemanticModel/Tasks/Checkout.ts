@@ -1,4 +1,4 @@
-import Task from '../../Common/Task';
+import Task from '../Task';
 
 export default class Checkout implements Task {
 

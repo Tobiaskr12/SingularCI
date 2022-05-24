@@ -1,5 +1,4 @@
 import YAML from 'yaml';
-import Pipeline from '../../Common/Pipeline';
 import fs from 'fs';
 import path from 'path';
 import { TargetPlatformGenerator } from '../interfaces/TargetPlatformGenerator';
@@ -9,13 +8,14 @@ import { generateBuildDockerImageTask, generateCheckoutTask, generatePullDockerI
 import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
 import Run from '../../SemanticModel/Tasks/Run';
 import { GitHubTriggerObject, StageObject } from './types';
-import Stage from '../../Common/Stage';
+import Stage from '../../SemanticModel/Stage';
 import { Inject, Service } from 'typedi';
 import DSLParser from './../../Parser/DSLParser';
+import IPipeline from '../../SemanticModel/interfaces/IPipeline';
 
 @Service({ id: "GitHubConfigGenerator" })
 export class GitHubConfigGenerator implements TargetPlatformGenerator {
-  private pipeline: Pipeline;
+  private pipeline: IPipeline;
   private configObject: any;
   
   constructor(@Inject('dslparser') parser: DSLParser) {

@@ -1,9 +1,8 @@
 import YAML from 'yaml';
-import Pipeline from '../../Common/Pipeline';
 import { TargetPlatformGenerator } from '../interfaces/TargetPlatformGenerator';
 import fs from 'fs';
 import path from 'path';
-import Stage from '../../Common/Stage';
+import Stage from '../../SemanticModel/Stage';
 import BuildDockerImage from '../../SemanticModel/Tasks/BuildDockerImage';
 import Checkout from '../../SemanticModel/Tasks/Checkout';
 import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
@@ -12,10 +11,11 @@ import { dockerSetup, generateBuildDockerImageTask, generateCheckoutTask, genera
 import { GitLabJobObject } from './types';
 import { Inject, Service } from 'typedi';
 import DSLParser from './../../Parser/DSLParser';
+import IPipeline from './../../SemanticModel/interfaces/IPipeline';
 
 @Service({ id: "GitLabConfigGenerator" })
 export class GitLabConfigGenerator implements TargetPlatformGenerator {
-  private pipeline: Pipeline;
+  private pipeline: IPipeline;
   private configObject: any;
 
   constructor(@Inject("dslparser") parser: DSLParser) { 

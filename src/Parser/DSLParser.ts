@@ -1,4 +1,4 @@
-import { dockerBuildSyntax, dockerPullSyntax } from './../Common/Job';
+import { dockerBuildSyntax, dockerPullSyntax } from '../SemanticModel/Job';
 import YAML from 'yaml';
 import fs from 'fs';
 import path from 'path';
@@ -7,9 +7,8 @@ import StageBuilder from './StageBuilder';
 import JobBuilder from './JobBuilder';
 import Run from '../SemanticModel/Tasks/Run';
 import BuildDockerImage from './../SemanticModel/Tasks/BuildDockerImage';
-import Job, { JobSyntaxType } from '../Common/Job';
-import Stage, { StageSyntaxType } from '../Common/Stage';
-import Pipeline from '../Common/Pipeline';
+import Job, { JobSyntaxType } from '../SemanticModel/Job';
+import Stage, { StageSyntaxType } from '../SemanticModel/Stage';
 import { TargetsFactory } from './../SemanticModel/Targets';
 import { Inject, Service } from 'typedi';
 import { JobBuilderFactory } from './JobBuilderFactory';
@@ -20,6 +19,7 @@ import { TriggerFactory } from '../SemanticModel/Trigger';
 import ITargets from '../SemanticModel/interfaces/ITargets';
 import VariablesFactory from './../SemanticModel/Variables';
 import IVariables from '../SemanticModel/interfaces/IVariables';
+import IPipeline from '../SemanticModel/interfaces/IPipeline';
 
 @Service({ id: 'dslparser' })
 class DSLParser{
@@ -33,7 +33,7 @@ class DSLParser{
 
   constructor(
     @Inject('dslparser.inputFileName') inputFileName: string,
-    @Inject('Pipeline') pipeline: Pipeline,
+    @Inject('Pipeline') pipeline: IPipeline,
     @Inject('JobBuilderFactory') jobBuilderFactory: JobBuilderFactory,
     @Inject('TargetsFactory') targetsFactory: TargetsFactory,
     @Inject('TriggerFactory') triggerFactory: TriggerFactory,
@@ -53,7 +53,7 @@ class DSLParser{
     this.variablesFactory = variablesFactory;
   }
 
-  parse(): Pipeline {
+  parse(): IPipeline {
     const variables = this.buildVariables();
     this.resolveVariables(variables);
     
@@ -241,7 +241,7 @@ class DSLParser{
     return checkout;
   }
 
-  private buildPipeline(targets: ITargets, variables: IVariables, trigger: ITrigger): Pipeline {
+  private buildPipeline(targets: ITargets, variables: IVariables, trigger: ITrigger): IPipeline {
     const stageSymbolTable = StageSymbolTable.getInstance();
     
     this.pipeline.reset();

@@ -2,7 +2,7 @@ import Checkout from './../../SemanticModel/Tasks/Checkout';
 import BuildDockerImage from './../../SemanticModel/Tasks/BuildDockerImage';
 import PullDockerImage from '../../SemanticModel/Tasks/PullDockerImage';
 import Run from '../../SemanticModel/Tasks/Run';
-import Stage from '../../Common/Stage';
+import Stage from '../../SemanticModel/Stage';
 
 export const generateCheckoutTask = (task: Checkout) => {
   const commandArray: string[] = [];
