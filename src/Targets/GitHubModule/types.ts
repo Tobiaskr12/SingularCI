@@ -6,7 +6,7 @@ export type StageObject = {
   container?: string,
   'runs-on'?: string,
   needs?: string[],
-  steps: any[]
+  steps: string[]
 };
 
 export type GitHubTriggerObject = {
