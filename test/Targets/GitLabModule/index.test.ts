@@ -38,8 +38,16 @@ test('When the generateConfig method has been run, a CI/CD config file should be
 
   expect(fs.existsSync(path.join(process.cwd(), ".gitlab-ci.yml"))).toBe(true);
   expect(fs.readFileSync(path.join(process.cwd(), ".gitlab-ci.yml"), 'utf8').length).toBeGreaterThan(50);
-
-  if (fs.existsSync(path.join(process.cwd(), ".singularci-copy.yml"))) {
-    fs.rmSync(path.join(process.cwd(), ".singularci-copy.yml"));
-  }
 });
+
+afterAll(() => {
+  setTimeout(() => {
+    if (fs.existsSync(path.join(process.cwd(), ".singularci-copy.yml"))) {
+      fs.rmSync(path.join(process.cwd(), ".singularci-copy.yml"));
+    }
+
+    if (fs.existsSync(path.join(process.cwd(), ".gitlab-ci.yml"))) {
+      fs.rmSync(path.join(process.cwd(), ".gitlab-ci.yml"));
+    }
+  }, 100);
+})
