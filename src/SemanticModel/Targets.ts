@@ -1,4 +1,4 @@
-import ITargets from "../Common/Interfaces/ITargets";
+import ITargets from "./interfaces/ITargets";
 import { Service } from "typedi";
 
 @Service({ id: "TargetsFactory" })

@@ -2,7 +2,7 @@ import YAML from 'yaml';
 import Pipeline from '../../Common/Pipeline';
 import fs from 'fs';
 import path from 'path';
-import { TargetPlatformGenerator } from '../../Common/Interfaces/TargetPlatformGenerator';
+import { TargetPlatformGenerator } from '../interfaces/TargetPlatformGenerator';
 import BuildDockerImage from '../../SemanticModel/Tasks/BuildDockerImage';
 import Checkout from '../../SemanticModel/Tasks/Checkout';
 import { generateBuildDockerImageTask, generateCheckoutTask, generatePullDockerImageTask, generateRunTask } from './tasks';

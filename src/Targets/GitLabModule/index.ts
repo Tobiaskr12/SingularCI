@@ -1,6 +1,6 @@
 import YAML from 'yaml';
 import Pipeline from '../../Common/Pipeline';
-import { TargetPlatformGenerator } from './../../Common/Interfaces/TargetPlatformGenerator';
+import { TargetPlatformGenerator } from '../interfaces/TargetPlatformGenerator';
 import fs from 'fs';
 import path from 'path';
 import Stage from '../../Common/Stage';

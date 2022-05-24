@@ -1,5 +1,5 @@
 import { Service } from "typedi";
-import ITrigger from "../Common/Interfaces/ITrigger";
+import ITrigger from "./interfaces/ITrigger";
 
 @Service({ id: "TriggerFactory" })
 export class TriggerFactory {

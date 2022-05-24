@@ -1,8 +1,8 @@
 import { Inject, Service } from "typedi";
 import Stage from "./Stage";
-import ITargets from "./Interfaces/ITargets";
-import IVariables from './Interfaces/IVariables';
-import ITrigger from "./Interfaces/ITrigger";
+import ITargets from "../SemanticModel/interfaces/ITargets";
+import ITrigger from "../SemanticModel/interfaces/ITrigger";
+import IVariables from "../SemanticModel/interfaces/IVariables";
 
 @Service({ id: 'Pipeline' })
 export default class Pipeline {    

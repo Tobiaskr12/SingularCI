@@ -1,5 +1,5 @@
 import { Service } from "typedi";
-import IVariables from "../Common/Interfaces/IVariables";
+import IVariables from "./interfaces/IVariables";
 
 @Service({ id: "VariablesFactory" })
 export default class VariablesFactory {

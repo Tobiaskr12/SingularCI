@@ -15,11 +15,11 @@ import { Inject, Service } from 'typedi';
 import { JobBuilderFactory } from './JobBuilderFactory';
 import PullDockerImage from '../SemanticModel/Tasks/PullDockerImage';
 import Checkout from '../SemanticModel/Tasks/Checkout';
-import ITrigger from '../Common/Interfaces/ITrigger';
+import ITrigger from '../SemanticModel/interfaces/ITrigger';
 import { TriggerFactory } from '../SemanticModel/Trigger';
-import ITargets from '../Common/Interfaces/ITargets';
-import IVariables from '../Common/Interfaces/IVariables';
+import ITargets from '../SemanticModel/interfaces/ITargets';
 import VariablesFactory from './../SemanticModel/Variables';
+import IVariables from '../SemanticModel/interfaces/IVariables';
 
 @Service({ id: 'dslparser' })
 class DSLParser{
