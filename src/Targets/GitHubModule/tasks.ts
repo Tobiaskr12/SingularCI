@@ -18,12 +18,7 @@ export const generateRunTask = (task: IRun) => {
     runCommand = task.getCommands()[0];
   } else if (task.getCommands().length > 1) { 
     for (let i = 0; i < task.getCommands().length; i++) {
-      runCommand += `${task.getCommands()[i]}`;
-      if (i < task.getCommands().length - 1) {
-        runCommand += ' && ';
-      }
-
-      runCommand += '\n';
+      runCommand += `${task.getCommands()[i]}\n`;
     }
   }
 
