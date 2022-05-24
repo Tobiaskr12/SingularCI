@@ -1,15 +1,12 @@
 pipeline:
   targets:
     - GitHub
-    - GitLab
 
   variables:
-    - key: repo-name
-      value: ${secrets.super-secret-repo-name}
-    - key: docker-username
-      value: GenericDockerUserName
+    - key: docker_username
+      value: saibotv2
     - key: image_name
-      value: SingularCI_TestingImage
+      value: singularci
 
   triggers: 
     trigger_types:
@@ -18,33 +15,20 @@ pipeline:
     branches:
       - master
       - main
-      - refactor
   
   stages:
 
     - stage:
-        name: lintstage
-        runs_on: ubuntu-latest
+        name: lint
+        runs_on: node:16
         jobs:
-          - name: Lint
+          - name: checkout repository
+            checkout: Tobiaskr12/SingularCITestProject
+          - name: run eslint
             run: 
-              - apt-get update -y
-              - apt-get install -y nodejs
               - npm install
               - npm run lint
-    - stage:
-        name: build
-        runs_on: ubuntu-latest
-        jobs:
-          - name: Checkout
-            checkout: testreponref
-          - name: build docker image
-            docker_build:
-              image_name: ${image_name}
-              docker_file_path: ./Dockerfile 
-              user_name: ${docker-username}
-              password: ${secrets.docker-password}
-    
+
     - stage:
         name: test
         needs: [lintstage, build]
@@ -54,19 +38,15 @@ pipeline:
             run: 
               - npm install
               - npm test
+
     - stage:
-        name: pull_image
+        name: build
         runs_on: ubuntu-latest
         jobs:
-          - name: pull image from dockerHub
-            docker_pull:
-              image_name: ${docker-username}/${image_name}
-              user_name: ${docker-username}
-              password: ${secrets.docker-password}
-    - stage:
-        name: custom image stage
-        runs_on: node:16
-        jobs:
-          - name: custom image job
-            run: 
-              - echo "Im a custom image job"
+          - name: execute docker build
+            docker_build:
+              image_name: ${image_name}
+              docker_file_path: ./ 
+              user_name: ${docker_username}
+              password: ${secrets.DOCKER_PASSWORD}
+    
