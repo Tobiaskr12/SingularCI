@@ -38,4 +38,8 @@ test('When the generateConfig method has been run, a workflow file should be gen
 
   expect(fs.existsSync(path.join(process.cwd(), ".github/workflows/workflow.yml"))).toBe(true);
   expect(fs.readFileSync(path.join(process.cwd(), ".github/workflows/workflow.yml"), 'utf8').length).toBeGreaterThan(50);
+
+  if (fs.existsSync(path.join(process.cwd(), ".singularci-copy.yml"))) {
+    fs.rmSync(path.join(process.cwd(), ".singularci-copy.yml"));
+  }
 });
