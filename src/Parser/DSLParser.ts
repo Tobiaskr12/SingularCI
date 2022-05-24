@@ -5,7 +5,7 @@ import path from 'path';
 import StageSymbolTable from './StageSymbolTable';
 import StageBuilder from './StageBuilder';
 import JobBuilder from './JobBuilder';
-import { BuildDockerImageFactory } from './../SemanticModel/Tasks/BuildDockerImage';
+import IBuildDockerImageFactory from './../SemanticModel/Tasks/BuildDockerImage';
 import Job, { JobSyntaxType } from '../SemanticModel/Job';
 import StageFactory, { StageSyntaxType } from '../SemanticModel/Stage';
 import { TargetsFactory } from './../SemanticModel/Targets';
@@ -39,7 +39,7 @@ class DSLParser{
   @Inject('StageFactory') // @ts-ignore
   private stageFactory: StageFactory;
   @Inject('BuildDockerImageFactory') // @ts-ignore
-  private buildDockerImageFactory: BuildDockerImageFactory;
+  private buildDockerImageFactory: IBuildDockerImageFactory;
   @Inject('RunFactory') // @ts-ignore
   private runFactory: RunFactory;
   @Inject('CheckoutFactory') //@ts-ignore

@@ -3,8 +3,17 @@ import IBuildDockerImage from '../interfaces/IBuildDockerImage';
 import Task from '../interfaces/Task';
 import { TaskType } from './TaskEnum';
 
+export default interface IBuildDockerImageFactory {
+  createBuildDockerImageTask(
+    imageName: string,
+    dockerFilePath: string,
+    userName: string,
+    password: string
+  ): Task
+}
+
 @Service({ id: 'BuildDockerImageFactory' })
-export class BuildDockerImageFactory {
+export class BuildDockerImageFactory implements IBuildDockerImageFactory {
   createBuildDockerImageTask(
     imageName: string,
     dockerFilePath: string,

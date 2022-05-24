@@ -8,12 +8,13 @@ import { GitLabConfigGenerator } from '../Targets/GitLabModule';
 import { GitHubConfigGenerator } from './../Targets/GitHubModule/index';
 import fs from 'fs';
 import Pipeline from '../SemanticModel/Pipeline';
-import CheckoutFactory from '../SemanticModel/Tasks/Checkout';
+import { BuildDockerImageFactory } from '../SemanticModel/Tasks/BuildDockerImage';
 
 Container.import([
   GitHubConfigGenerator,
   GitLabConfigGenerator,
-  Pipeline
+  Pipeline,
+  BuildDockerImageFactory
 ]);
 
 @Service({ id: 'program' })
