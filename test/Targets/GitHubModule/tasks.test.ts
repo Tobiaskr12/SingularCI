@@ -4,11 +4,15 @@ import RunFactory from "../../../src/SemanticModel/Tasks/Run";
 import { generateBuildDockerImageTask, generateCheckoutTask, generateRunTask } from "../../../src/Targets/GitHubModule/tasks";
 
 test('generate checkout task', () => {
-  const task = new CheckoutFactory().createCheckoutTask('fake-repo.remote.git');
+  const repoUrl = 'fake-repo.remote.git';
+  const repoName = 'FakeName';
+
+  const task = new CheckoutFactory().createCheckoutTask(repoUrl, repoName);
   const generatedTask = generateCheckoutTask(task);
 
-  expect(generatedTask.uses).toBe('actions/checkout@v3');
-  expect(generatedTask.with.repository).toBe('fake-repo.remote.git');
+  expect(generatedTask.run).toEqual(
+    `git clone ${task.getRepositoryURL()}`
+  )
 });
 
 test('generate run task', () => {

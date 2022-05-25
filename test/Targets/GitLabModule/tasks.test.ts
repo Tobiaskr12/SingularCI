@@ -1,12 +1,18 @@
 import { BuildDockerImageFactory } from "../../../src/SemanticModel/Tasks/BuildDockerImage";
+import CheckoutFactory from "../../../src/SemanticModel/Tasks/Checkout";
 import RunFactory from "../../../src/SemanticModel/Tasks/Run";
 import { generateBuildDockerImageTask, generateCheckoutTask, generateRunTask } from "../../../src/Targets/GitLabModule/tasks";
 import { dockerSetup } from './../../../src/Targets/GitLabModule/tasks';
 
 test('generate checkout task', () => {
-  const generatedTask = generateCheckoutTask();
+  const repoURL = "fake.repo-name.git";
+  const repoName = "FakeRepo"
 
-  expect(generatedTask).toEqual(['echo "Checkout task not supported for GitLab"']);
+  const checkoutFactory = new CheckoutFactory();
+  const task = checkoutFactory.createCheckoutTask(repoURL, repoName);
+  const generatedTask = generateCheckoutTask(task);
+
+  expect(generatedTask).toEqual([`git clone ${repoURL}`, `cd ${repoName}`]);
 });
 
 test('generate run task', () => { 

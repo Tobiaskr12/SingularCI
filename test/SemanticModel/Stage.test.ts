@@ -26,7 +26,7 @@ beforeAll(() => {
   checkoutFactory = new CheckoutFactory();
 
   task1 = runFactory.createRunTask(['echo "This is a test task"']);
-  task2 = checkoutFactory.createCheckoutTask('fake-repo.remote.git');
+  task2 = checkoutFactory.createCheckoutTask('fake-repo.remote.git', 'repoName');
   job = new Job(jobName, [task1, task2]);
 
   stage = stageFactory.createStage(stageName,[job],[],environment)

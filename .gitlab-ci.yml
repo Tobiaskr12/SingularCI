@@ -1,0 +1,30 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+stages:
+  - lint
+  - test
+lint-checkout_repository_and_run_eslint:
+  image: node:16
+  stage: lint
+  needs: []
+  before_script:
+    - git clone https://github.com/Tobiaskr12/SingularCI.git
+    - cd SingularCI
+  script:
+    - npm install
+    - npm run lint
+test-checkout_repository_and_run_tests:
+  image: ubuntu:latest
+  stage: test
+  needs:
+    - lint-checkout_repository_and_run_eslint
+  before_script:
+    - git clone https://github.com/Tobiaskr12/SingularCI.git
+    - cd SingularCI
+  script:
+    - npm install
+    - npm test

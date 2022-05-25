@@ -9,6 +9,8 @@ import DSLParser from './../../Parser/DSLParser';
 import IPipeline from '../../SemanticModel/interfaces/IPipeline';
 import IStage from '../../SemanticModel/interfaces/IStage';
 import { TaskType } from '../../SemanticModel/Tasks/TaskEnum';
+import Task from '../../SemanticModel/interfaces/Task';
+import ICheckout from '../../SemanticModel/interfaces/ICheckout';
 
 @Service({ id: "GitHubConfigGenerator" })
 export class GitHubConfigGenerator implements TargetPlatformGenerator {
@@ -161,17 +163,41 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
     for (const job of jobs) {
       const tasks = job.getTasks();
 
+      const checkoutTasks = tasks.filter((task: Task & ICheckout) => task.getType() === TaskType.Checkout);
+      let checkoutRepoName = "";
+
+      if (checkoutTasks.length > 1) { 
+        throw new Error("Only one checkout is allowed per job");
+      } 
+
+      if (checkoutTasks.length === 1) { 
+        checkoutRepoName = checkoutTasks[0].getRepositoryName();
+      }
+
       for (const task of tasks) {
+        let tempTask = {};
+
         if (task.getType() === TaskType.BuildDockerImage) {
-          resultArr.push(...generateBuildDockerImageTask(task));
+          tempTask = generateBuildDockerImageTask(task);
         }
         
         if (task.getType() === TaskType.Checkout) {
-          resultArr.push(generateCheckoutTask(task));
+          tempTask = generateCheckoutTask(task);
         }
         
         if (task.getType() === TaskType.Run) {
-          resultArr.push(generateRunTask(task));
+          tempTask = generateRunTask(task);
+        }
+
+        if (checkoutRepoName && tempTask && task.getType() !== TaskType.Checkout) {
+          // @ts-ignore
+          tempTask["working-directory"] = checkoutRepoName;
+        }
+
+        if (task.getType() === TaskType.Checkout) { 
+          resultArr.unshift(tempTask);
+        } else {
+          resultArr.push(tempTask);
         }
       }
     }

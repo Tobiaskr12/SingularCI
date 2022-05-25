@@ -1,3 +1,4 @@
 export default interface ICheckout{
-  getRepositoryURL():string;
+  getRepositoryURL(): string;
+  getRepositoryName(): string;
 }

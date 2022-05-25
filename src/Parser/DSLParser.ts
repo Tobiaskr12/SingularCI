@@ -1,4 +1,3 @@
-import { dockerBuildSyntax } from '../SemanticModel/Job';
 import YAML from 'yaml';
 import fs from 'fs';
 import path from 'path';
@@ -6,7 +5,7 @@ import StageSymbolTable from './StageSymbolTable';
 import StageBuilder from './StageBuilder';
 import JobBuilder from './JobBuilder';
 import IBuildDockerImageFactory from './../SemanticModel/Tasks/BuildDockerImage';
-import Job, { JobSyntaxType } from '../SemanticModel/Job';
+import Job, { JobSyntaxType, dockerBuildSyntax, checkoutSyntax } from '../SemanticModel/Job';
 import StageFactory, { StageSyntaxType } from '../SemanticModel/Stage';
 import { TargetsFactory } from './../SemanticModel/Targets';
 import { Inject, Service } from 'typedi';
@@ -227,8 +226,11 @@ class DSLParser{
     return docker_build;
   }
 
-  private generateCheckoutTask(repo_url: string): Task {
-    const checkout = this.checkoutFactory.createCheckoutTask(repo_url);
+  private generateCheckoutTask(job: checkoutSyntax): Task {
+    const checkout = this.checkoutFactory.createCheckoutTask(
+      job.repo_url,
+      job.repo_name
+    );
     return checkout;
   }
 

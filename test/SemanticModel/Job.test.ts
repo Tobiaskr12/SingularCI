@@ -14,7 +14,7 @@ it('should be possible to get the tasks of a job', () => {
   const checkoutFactory = new CheckoutFactory();
 
   const task1 = runFactory.createRunTask(['echo "This is a test task"']);
-  const task2 = checkoutFactory.createCheckoutTask('fake-repo.remote.git');
+  const task2 = checkoutFactory.createCheckoutTask('fake-repo.remote.git', 'repoName');
 
   const job = new Job(jobName, [task1, task2]);
 

@@ -24,10 +24,15 @@ export type dockerPullSyntax = {
     image_name: string
 }
 
+export type checkoutSyntax = {
+    repo_url: string,
+    repo_name: string,
+}
+
 export type JobSyntaxType = {
     name: string,
     run?: string[];
     docker_build?: dockerBuildSyntax;
     docker_pull?: dockerPullSyntax;
-    checkout?: string
+    checkout?: checkoutSyntax
 }

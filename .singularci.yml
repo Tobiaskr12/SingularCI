@@ -1,6 +1,7 @@
 pipeline:
   targets:
     - GitHub
+    - GitLab
 
   variables:
     - key: docker_username
@@ -22,9 +23,10 @@ pipeline:
         name: lint
         runs_on: node:16
         jobs:
-          - name: checkout repository
-            checkout: Tobiaskr12/SingularCI
-          - name: run eslint
+          - name: checkout repository and run eslint
+            checkout: 
+              repo_url: https://github.com/Tobiaskr12/SingularCI.git
+              repo_name: SingularCI
             run: 
               - npm install
               - npm run lint
@@ -34,9 +36,10 @@ pipeline:
         needs: [lint]
         runs_on: ubuntu-latest
         jobs:
-          - name: checkout repository
-            checkout: Tobiaskr12/SingularCI
-          - name: Unit test
+          - name: checkout repository and run tests
+            checkout: 
+              repo_url: https://github.com/Tobiaskr12/SingularCI.git
+              repo_name: SingularCI
             run: 
               - npm install
               - npm test

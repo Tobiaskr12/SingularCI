@@ -3,11 +3,12 @@ import IRun from "../../SemanticModel/interfaces/IRun";
 import IBuildDockerImage from './../../SemanticModel/interfaces/IBuildDockerImage';
 
 export const generateCheckoutTask = (task: ICheckout) => {
+  let runCommand = "";
+
+  runCommand += `git clone ${task.getRepositoryURL()}`;
+
   return {
-    uses: 'actions/checkout@v3',
-    with: {
-      repository: task.getRepositoryURL()
-    }
+    run: runCommand
   }
 }
 

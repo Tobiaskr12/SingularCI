@@ -1,9 +1,13 @@
 import IBuildDockerImage from '../../SemanticModel/interfaces/IBuildDockerImage';
 import IRun from '../../SemanticModel/interfaces/IRun';
+import ICheckout from './../../SemanticModel/interfaces/ICheckout';
 
-export const generateCheckoutTask = () => {
+export const generateCheckoutTask = (task: any) => {
   const commandArray: string[] = [];
-  commandArray.push('echo "Checkout task not supported for GitLab"');
+
+  commandArray.push(`git clone ${task.getRepositoryURL()}`);
+  commandArray.push(`cd ${task.getRepositoryName()}`);
+
   return commandArray;
 }
 

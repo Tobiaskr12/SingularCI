@@ -9,6 +9,7 @@ import DSLParser from './../../Parser/DSLParser';
 import IPipeline from './../../SemanticModel/interfaces/IPipeline';
 import IStage from '../../SemanticModel/interfaces/IStage';
 import { TaskType } from '../../SemanticModel/Tasks/TaskEnum';
+import ICheckout from './../../SemanticModel/interfaces/ICheckout';
 
 @Service({ id: "GitLabConfigGenerator" })
 export class GitLabConfigGenerator implements TargetPlatformGenerator {
@@ -137,18 +138,20 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
         const stageKey = `${stage.getName()}-${this.sanitizeJobName(jobs[j].getName())}`;
         const tasksArray: any[] = [];
         const needsArray: string[] = [];
-
+        const beforeScriptArray: string[] = [];
         
         const jobObject:GitLabJobObject = {
           [stageKey]: {
             image: this.getSelectedImage(this.pipeline.getStages()[i]),
             stage: this.pipeline.getStages()[i].getName(),
+            needs: needsArray,
+            before_script: beforeScriptArray,
             script: tasksArray,
-            needs: needsArray
           }
         };
         
-        tasksArray.push(...this.buildTasks(stageKey, jobObject, tasks));
+        beforeScriptArray.push(...this.buildBeforeScript(tasks));
+        tasksArray.push(...this.buildTasks(stageKey, jobObject, tasks));   
         needsArray.push(...this.buildNeeds(needs));
         
         Object.assign(this.configObject, jobObject);
@@ -156,7 +159,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
     }
   }
 
-  private buildNeeds = (needs:any):string[] => {
+  private buildNeeds = (needs:any): string[] => {
     const needsArray: string[] = [];
 
     for (let k = 0; k < needs.length; k++) {
@@ -177,6 +180,18 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
     return needsArray;
   }
 
+  private buildBeforeScript = (tasks: any) => {
+    const beforeScriptArray: string[] = [];
+    
+    for (const task of tasks) {
+      if (task.getType() === TaskType.Checkout) {
+        beforeScriptArray.push(...generateCheckoutTask(task));
+      }
+    }
+
+    return beforeScriptArray;
+  }
+
   private buildTasks = (stageKey: string, jobObject:GitLabJobObject, tasks:any):any[] => {
     const tasksArray: any[] = [];
 
@@ -185,10 +200,6 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
         jobObject[stageKey].image = "docker:latest";
         jobObject[stageKey].services = dockerSetup()
         tasksArray.push(...generateBuildDockerImageTask(task));
-      }
-      
-      if (task.getType() === TaskType.Checkout) {
-        tasksArray.push(...generateCheckoutTask())
       }
 
       if (task.getType() === TaskType.Run) {
