@@ -5,7 +5,7 @@ export default class StageSymbolTable {
   private static instance: StageSymbolTable | undefined;
   private stages: Record<string, StageBuilder>;
 
-  constructor() {
+  private constructor() {
     this.stages = {};
   }
 
