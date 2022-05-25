@@ -1,3 +1,5 @@
+[![BCH compliance](https://bettercodehub.com/edge/badge/Tobiaskr12/SingularCI?branch=main)](https://bettercodehub.com/)
+
 ## About SingularCI
 SingularCI is a transpiler which allows you to translate CI/CD configuration files written with the SingularCI DSL to platform-specific CI/CD configuration files. SingularCI currently supports GitHub Actions and GitLab CI/CD. We hope to add support for many other platforms in the future (Jenkins, TravisCI, CircleCI, etc.). Please read the section [Contributing](#contributing), if you want to learn how to contribute to the project. 
 
