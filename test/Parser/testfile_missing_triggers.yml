@@ -1,0 +1,31 @@
+pipeline:
+  targets:
+    - GitHub
+    - GitLab
+
+  variables:
+    - key: testKey
+      value: testValue
+  
+  stages:
+
+    - stage:
+        name: lintstage
+        runs_on: ubuntu-latest
+        jobs:
+          - name: Lint
+            run: 
+              - apt-get update -y
+              - apt-get install -y nodejs
+              - npm install
+              - npm run lint
+    
+    - stage:
+        name: buildstage
+        runs_on: ubuntu-latest
+        needs: [lintstage]
+        jobs:
+          - name: build
+            run: 
+              - echo build done
+    

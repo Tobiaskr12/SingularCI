@@ -13,6 +13,8 @@ import { TargetsFactory } from '../../src/SemanticModel/Targets';
 import StageFactory from '../../src/SemanticModel/Stage';
 import RunFactory from '../../src/SemanticModel/Tasks/Run';
 import Job from '../../src/SemanticModel/Job';
+import fs from 'fs';
+import path from 'path';
 
 let parser: DSLParser;
 let expectedPipeline: IPipeline;
@@ -25,9 +27,6 @@ beforeAll(() => {
     BuildDockerImageFactory,
     TriggerFactory
   ]);
-
-  Container.set('dslparser.inputFileName', './test/Parser/testfile.yml');
-  parser = Container.get<DSLParser>('dslparser');
 
   setupExpectedPipeline();
 })
@@ -70,7 +69,49 @@ const setupExpectedPipeline = () => {
 }
 
 test('Comparing Pipeline to expected Pipeline', () => {
+  Container.set('dslparser.inputFileName', './test/Parser/testfile.yml');
+  parser = Container.get<DSLParser>('dslparser');
+
   const resultPipeline = parser.parse();
   
   expect(resultPipeline).toEqual(expectedPipeline);
 });
+
+test('Attempting to parse an input file without the triggers key throws an error', () => {
+  Container.set('dslparser.inputFileName', './test/Parser/testfile_missing_triggers.yml');
+  parser = Container.get<DSLParser>('dslparser');
+
+  expect(() => {
+    parser.parse();
+  }).toThrow();
+});
+
+test('Attempting to parse an input file without the targets key throws an error', () => {
+  Container.set('dslparser.inputFileName', './test/Parser/testfile_missing_targets.yml');
+  parser = Container.get<DSLParser>('dslparser');
+
+  expect(() => {
+    parser.parse();
+  }).toThrow();
+});
+
+test('Attempting to parse an input file without the pipeline key throws an error', () => {
+  Container.set('dslparser.inputFileName', './test/Parser/testfile_missing_pipeline.yml');
+  parser = Container.get<DSLParser>('dslparser');
+
+  expect(() => {
+    parser.parse();
+  }).toThrow();
+});
+
+afterEach(() => {
+  Container.reset();
+});
+
+afterAll(() => {
+  setTimeout(() => {
+    if (fs.existsSync(path.join(process.cwd(), ".singularci-copy.yml"))) {
+      fs.rmSync(path.join(process.cwd(), ".singularci-copy.yml"));
+    }
+  }, 100);
+})
