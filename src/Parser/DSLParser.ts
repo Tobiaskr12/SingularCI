@@ -2,7 +2,6 @@ import YAML from 'yaml';
 import fs from 'fs';
 import path from 'path';
 import StageSymbolTable from './StageSymbolTable';
-import StageBuilder from './StageBuilder';
 import JobBuilder from './JobBuilder';
 import IBuildDockerImageFactory from './../SemanticModel/Tasks/BuildDockerImage';
 import Job, { JobSyntaxType, dockerBuildSyntax, checkoutSyntax } from '../SemanticModel/Job';
@@ -19,6 +18,7 @@ import VariablesFactory from './../SemanticModel/Variables';
 import IVariables from '../SemanticModel/interfaces/IVariables';
 import IPipeline from '../SemanticModel/interfaces/IPipeline';
 import Task from '../SemanticModel/interfaces/Task';
+import IStage from '../SemanticModel/interfaces/IStage';
 
 @Service({ id: 'dslparser' })
 class DSLParser{
@@ -133,10 +133,10 @@ class DSLParser{
     }
   }
 
-  private buildStages(): StageBuilder[]  {
+  private buildStages(): IStage[]  {
     try {
       const stages = YAML.parse(this.inputFileClone)['pipeline']['stages'];
-      const stageList: StageBuilder[] = [];
+      const stageList: IStage[] = [];
 
       for (const stageObject of stages) {
         stageList.push(this.buildStage(stageObject.stage));
@@ -148,7 +148,7 @@ class DSLParser{
     }
   }
   
-  private buildSymbolTable(stages: StageBuilder[]) {
+  private buildSymbolTable(stages: IStage[]) {
     const stageSymbolTable = StageSymbolTable.getInstance();
     stageSymbolTable.reset();
 
@@ -157,44 +157,51 @@ class DSLParser{
     }
   }
 
-  private buildStage(stage: StageSyntaxType): StageBuilder {
-    const stageBuilder = new StageBuilder();
+  private buildStage(stage: StageSyntaxType): IStage {
     try {
-      if (stage.name && stage.runs_on && stage.jobs) {
-        stageBuilder.setName(stage.name);
-        stageBuilder.setRunsOn(stage.runs_on);
-      
-        this.addNeedsToStage(stage, stageBuilder);
-        this.buildJobs(stage, stageBuilder);
-  
-      } else {
-        throw new Error(`Stage is missing a name or runs_on property`);
-      }
+      if (!stage.name) throw new Error(`A stage is missing a name`);
+      if (!stage.runs_on) throw new Error(`The stage ${stage.name} is missing a runs_on property`);
+      if (!stage.jobs) throw new Error(`The stage ${stage.name} does not contain any jobs`);
+
+      const needs = this.getNeedsFromStage(stage);
+      const jobs = this.buildJobs(stage);
+
+      return this.stageFactory.createStage(
+        stage.name,
+        jobs,
+        needs,
+        stage.runs_on
+      )
+
     } catch (error: any) {
-      console.error(error.message);
+      throw new Error(error.message);
     }
-    return stageBuilder;
   }
 
-  private addNeedsToStage(stage: StageSyntaxType, stageBuilder: StageBuilder) {
+  private getNeedsFromStage(stage: StageSyntaxType) {
+    const needs: string[] = [];
     if (stage.needs) {
       for (const need of stage.needs) {
-        stageBuilder.addNeeds(need);
+        needs.push(need);
       }
     }
+
+    return needs;
   }
 
-  private buildJobs(stage: StageSyntaxType, stageBuilder: StageBuilder) {
+  private buildJobs(stage: StageSyntaxType) {
+    const jobs: Job[] = [];
+
     for (const job of stage.jobs) {
       const jobBuilder = this.jobBuilderFactory.createJobBuilder();
 
       jobBuilder.setName(job.name);
       this.addTasksToJob(job, jobBuilder);
 
-      stageBuilder.addJob(
-        new Job(jobBuilder.getName(), jobBuilder.getTasks())
-      );
+      jobs.push(new Job(jobBuilder.getName(), jobBuilder.getTasks()));
     }
+
+    return jobs;
   }
 
   private addTasksToJob(job: JobSyntaxType, jobBuilder: JobBuilder) {

@@ -1,9 +1,9 @@
-import StageBuilder from "./StageBuilder";
+import IStage from "../SemanticModel/interfaces/IStage";
 
 export default class StageSymbolTable {
 
   private static instance: StageSymbolTable | undefined;
-  private stages: Record<string, StageBuilder>;
+  private stages: Record<string, IStage>;
 
   private constructor() {
     this.stages = {};
@@ -17,15 +17,15 @@ export default class StageSymbolTable {
     return this.instance;
   }
 
-  addStage(stage: StageBuilder): void {
+  addStage(stage: IStage): void {
     if (this.stages[stage.getName()]) {
       throw new Error(`Stage ${stage.getName()} already exists`);
     }
-    
+
     this.stages[stage.getName()] = stage;
   }
 
-  getStage(name: string): StageBuilder {
+  getStage(name: string): IStage {
     if (this.stages[name]) {
       return this.stages[name];
     }
@@ -33,7 +33,7 @@ export default class StageSymbolTable {
     throw new Error(`Stage ${name} not found`);
   }
 
-  getStages(): Record<string, StageBuilder> {
+  getStages(): Record<string, IStage> {
     return this.stages;
   }
 

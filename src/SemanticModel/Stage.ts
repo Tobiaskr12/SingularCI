@@ -27,7 +27,7 @@ export default class StageFactory {
 }
 
 @Service({ id: "Stage" })
-class Stage implements IStage {
+export class Stage implements IStage {
     constructor(
         private name: string,
         private jobs: Job[],
