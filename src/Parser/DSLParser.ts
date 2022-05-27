@@ -50,6 +50,10 @@ class DSLParser{
     const inputFilePath = path.join(process.cwd(), inputFileName);
     const fileCloneName = '.singularci-copy.yml';
     this.fileClonePath = path.join(process.cwd(), fileCloneName);
+
+    if (!fs.existsSync(inputFilePath)) { 
+      throw new Error(`Error: A .singularci.yml file was not found in the root of the project`);
+    }
     
     fs.copyFileSync(inputFilePath, this.fileClonePath);
     
@@ -57,6 +61,8 @@ class DSLParser{
   }
 
   parse(): IPipeline {
+    this.validateYAMLStructure();    
+
     const variables = this.buildVariables();
     this.resolveVariables(variables);
     
@@ -67,6 +73,14 @@ class DSLParser{
     this.buildSymbolTable(stages);
 
     return this.buildPipeline(targets, variables, triggers);
+  }
+  
+  private validateYAMLStructure() {
+    if (YAML.parse(this.inputFileClone)['pipeline'] == null) throw new Error('The keyword "pipeline" is missing');
+    if (YAML.parse(this.inputFileClone)['pipeline']['targets'] == null) throw new Error('No targets defined');
+    if (YAML.parse(this.inputFileClone)['pipeline']['triggers'] == null) throw new Error('No triggers defined');
+    if (YAML.parse(this.inputFileClone)['pipeline']['stages'] == null) throw new Error('The keyword "stages" is missing');
+    
   }
 
   private resolveVariables(variables: IVariables): void {
@@ -102,6 +116,9 @@ class DSLParser{
       const triggersArray = YAML.parse(this.inputFileClone)['pipeline']['triggers'];
       const triggers = this.triggerFactory.createTrigger();
 
+      if (!triggersArray.trigger_types) throw new Error('No trigger types defined');
+      if (!triggersArray.branches) throw new Error('No trigger branches defined');
+
       for (const triggerTypes of triggersArray.trigger_types) {
         triggers.addType(triggerTypes);
       }
@@ -118,12 +135,15 @@ class DSLParser{
 
   private buildVariables(): IVariables {
     try {
-      const variablesArray = YAML.parse(this.inputFileClone)['pipeline']['variables'];
       const variables = this.variablesFactory.createVariables();
 
-      if (variablesArray) {
-        for (const variable of variablesArray) {
-          variables.addVariable(variable.key, variable.value);
+      if (YAML.parse(this.inputFileClone)['pipeline']['variables'] != null) { 
+        const variablesArray = YAML.parse(this.inputFileClone)['pipeline']['variables'];
+  
+        if (variablesArray) {
+          for (const variable of variablesArray) {
+            variables.addVariable(variable.key, variable.value);
+          }
         }
       }
 
@@ -133,7 +153,7 @@ class DSLParser{
     }
   }
 
-  private buildStages(): IStage[]  {
+  private buildStages(): IStage[]  {    
     try {
       const stages = YAML.parse(this.inputFileClone)['pipeline']['stages'];
       const stageList: IStage[] = [];
@@ -195,6 +215,8 @@ class DSLParser{
     for (const job of stage.jobs) {
       const jobBuilder = this.jobBuilderFactory.createJobBuilder();
 
+      if (!job.name) throw new Error(`A job is missing a name`);
+
       jobBuilder.setName(job.name);
       this.addTasksToJob(job, jobBuilder);
 
@@ -205,25 +227,38 @@ class DSLParser{
   }
 
   private addTasksToJob(job: JobSyntaxType, jobBuilder: JobBuilder) {
-    if (job.run) {
-      jobBuilder.addTask(this.generateRunTask(job.run));
-    } 
-    
-    if (job.docker_build) { 
-      jobBuilder.addTask(this.generateDockerBuildTask(job.docker_build));
-    }
-
-    if (job.checkout) {
-      jobBuilder.addTask(this.generateCheckoutTask(job.checkout));
+    try {
+      if (job.run) {
+        if (!Array.isArray(job.run)) throw new Error(`The run property of job ${job.name} is not an array`);
+        jobBuilder.addTask(this.generateRunTask(job.run));
+      } 
+      
+      if (job.docker_build) { 
+        jobBuilder.addTask(this.generateDockerBuildTask(job.docker_build));
+      }
+  
+      if (job.checkout) {
+        jobBuilder.addTask(this.generateCheckoutTask(job.checkout));
+      }
+    } catch (error: any) {
+      throw new Error(error.message);
     }
   }
 
   private generateRunTask(commands: string[]): Task {
+    if (commands.length === 0) throw new Error(`A run task does not contain any commands`);
+    if (!commands) throw new Error(`A run task is not valid`);
+
     const run = this.runFactory.createRunTask(commands);
     return run;
   }
 
   private generateDockerBuildTask(job: dockerBuildSyntax): Task {
+    if (!job.image_name) throw new Error(`A docker build task is missing the property image_name`);
+    if (!job.docker_file_path) throw new Error(`A docker build task is missing the property docker_file_path`);
+    if (!job.user_name) throw new Error(`A docker build task is missing the property user_name`);
+    if (!job.password) throw new Error(`A docker build task is missing the property password`);
+
     const docker_build = this.buildDockerImageFactory.createBuildDockerImageTask(
       job.image_name,
       job.docker_file_path,
@@ -234,6 +269,9 @@ class DSLParser{
   }
 
   private generateCheckoutTask(job: checkoutSyntax): Task {
+    if (!job.repo_url) throw new Error(`A checkout task is missing the property repo_url`);
+    if (!job.repo_name) throw new Error(`A checkout task is missing the property repo_name`);
+
     const checkout = this.checkoutFactory.createCheckoutTask(
       job.repo_url,
       job.repo_name

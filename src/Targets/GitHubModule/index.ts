@@ -175,29 +175,31 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
       }
 
       for (const task of tasks) {
-        let tempTask = {};
+        let tempTasks = [];
 
         if (task.getType() === TaskType.BuildDockerImage) {
-          tempTask = generateBuildDockerImageTask(task);
+          tempTasks.push(...generateBuildDockerImageTask(task));
         }
         
         if (task.getType() === TaskType.Checkout) {
-          tempTask = generateCheckoutTask(task);
+          tempTasks.push(generateCheckoutTask(task));
         }
         
         if (task.getType() === TaskType.Run) {
-          tempTask = generateRunTask(task);
-        }
+          const tempObj = generateRunTask(task);
 
-        if (checkoutRepoName && tempTask && task.getType() !== TaskType.Checkout) {
-          // @ts-ignore
-          tempTask["working-directory"] = checkoutRepoName;
+          if (checkoutRepoName) {
+            // @ts-ignore
+            tempObj["working-directory"]= checkoutRepoName;
+          }
+
+          tempTasks.push(tempObj);
         }
 
         if (task.getType() === TaskType.Checkout) { 
-          resultArr.unshift(tempTask);
+          resultArr.unshift(...tempTasks);
         } else {
-          resultArr.push(tempTask);
+          resultArr.push(...tempTasks);
         }
       }
     }

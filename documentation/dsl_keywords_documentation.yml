@@ -1,0 +1,73 @@
+# This file is intended to show users which keywords are available for SingularCI.
+# The keywords marked as required must be provided by the user or the program will throw an error.
+# If a child-key is marked as required, but the parent-key is optional, then the child-key is only required 
+# if the parent-key is provided.
+
+# required: true, keys: targets, variables, triggers, stages
+pipeline:
+
+  # required: true, type: string array, valid values: GitHub | GitLab
+  targets:
+    - GitHub
+    - GitLab
+  
+  # required: false, type: array of key-value pairs
+  variables:
+      # required: true, type: string
+    - key: example-key
+      # required: true, type: string
+      value: example-value
+  
+  # required: true, keys: trigger_types and branches
+  triggers:
+    # required: true, type: string array, valid values: push | pull_request
+    trigger_types:
+      - push
+      - pull_request
+    # required: true, type: string array
+    branches:
+      - master
+      - main
+      - development
+      - etc
+      
+  # required: true, type: stage array
+  stages:
+    # required: true, keys: name, runs_on, needs and jobs
+    - stage:
+        # required: true, type: string
+        name: example-name
+        # required: true, type: string
+        runs_on: ubuntu-latest
+        # required: false, type: string
+        needs: example-stage
+        # required: true, type: array of task objects with a name. Task types: checkout, run, docker_build
+        jobs:
+          - 
+            # required: true, type: string
+            name: example-job-name
+            # required: false, keys: repo_name & repo_url
+            checkout: 
+              # required: true, type: string
+              repo_name: example_repo_name
+              # required: true, type: string
+              repo_url: https://example_repo_url.git
+              
+            # required: false, type string array   
+            run: 
+              - echo "example-command 1"
+              - npm install
+              - npm run example-command2
+
+            # required: false, keys: image_name, docker_file_path, user_name, password  
+            docker_build:
+              # required: true, type: string
+              image_name: example_image_name
+              # required: true, type: string
+              docker_file_path: ./exaple_path
+              # required: true, type: string
+              user_name: ${ example__user_name }      # use the syntax ${ <variable_name> } 
+                                                      # to access variables defined in the variables section
+              # required: true, type: string
+              password: ${ secrets.example_password } # use the syntax ${ secrets.<secret_name> } 
+                                                      # to access secrets defined on the targeted platforms

@@ -3,12 +3,6 @@ pipeline:
     - GitHub
     - GitLab
 
-  variables:
-    - key: docker_username
-      value: saibotv2
-    - key: image_name
-      value: singularci
-
   triggers: 
     trigger_types:
       - push
