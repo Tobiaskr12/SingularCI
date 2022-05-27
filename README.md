@@ -8,7 +8,7 @@ SingularCI is a transpiler which allows you to translate CI/CD configuration fil
 SingularCI is a NodeJS project written in TypeScript. In order to support non-NodeJS projects, the NPM package [pkg](https://www.npmjs.com/package/pkg) is used to wrap the system in executables for Windows, OS X and Linux. This means that you can use SingularCI with virtually any project on any computer.
 
 ## Getting Started
-SingularCI can be installed as an NPM package or downloaded as a set of executeables. Regardless of which approach you choose, the first step is to add a `.singularci.yml` file to the root of your repository. This is the file where you write your pipelines. To learn more about how to structure this file and which keywords you can use, please see the [schema validation file](). (Not a valid link yet!)
+SingularCI can be installed as an NPM package or downloaded as a set of executeables. Regardless of which approach you choose, the first step is to add a `.singularci.yml` file to the root of your repository. This is the file where you write your pipelines. To learn more about how to structure this file and which keywords you can use, please see the [DSL keywords documentation](https://github.com/Tobiaskr12/SingularCI/blob/main/documentation/dsl_keywords_documentation.yml).
 
 #### NodeJS
 If you want to use SingularCI in a NodeJS project, the easiest way to do it is by installing the [NPM package](https://www.npmjs.com/package/singularci) by running:
