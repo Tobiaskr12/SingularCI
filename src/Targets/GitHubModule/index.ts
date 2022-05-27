@@ -175,7 +175,7 @@ export class GitHubConfigGenerator implements TargetPlatformGenerator {
       }
 
       for (const task of tasks) {
-        let tempTasks = [];
+        const tempTasks = [];
 
         if (task.getType() === TaskType.BuildDockerImage) {
           tempTasks.push(...generateBuildDockerImageTask(task));
