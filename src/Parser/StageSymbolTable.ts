@@ -18,6 +18,10 @@ export default class StageSymbolTable {
   }
 
   addStage(stage: StageBuilder): void {
+    if (this.stages[stage.getName()]) {
+      throw new Error(`Stage ${stage.getName()} already exists`);
+    }
+    
     this.stages[stage.getName()] = stage;
   }
 

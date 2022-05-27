@@ -22,9 +22,9 @@ export default class StageBuilder {
         return this.jobs;
     }
 
-    addNeeds(stage: string) {
-        if (stage.length > 0) {
-            this.needs.push(stage);
+    addNeeds(stageName: string) {
+        if (stageName.length > 0) {
+            this.needs.push(stageName);
         }
     }
 
