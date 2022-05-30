@@ -18,11 +18,9 @@ class Targets implements ITargets {
 
     addTarget(target:string){
         if (this.isTargetValid(target)) {
-            if (!this.targets.includes(target)) {
-                this.targets.push(target);
-            }
+            this.targets.push(target);
         } else {
-            throw new Error(`${target} is not a valid target`);
+            throw new Error(`${target} is defined multiple times or invalid`);
         }
     }
 
@@ -35,6 +33,6 @@ class Targets implements ITargets {
     }
 
     private isTargetValid(target: string): boolean{
-        return this.acceptedTargets.includes(target);
+        return this.acceptedTargets.includes(target) && !this.targets.includes(target);
     }
 }

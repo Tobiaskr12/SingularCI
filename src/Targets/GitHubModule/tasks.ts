@@ -53,6 +53,7 @@ export const generateBuildDockerImageTask = (task: IBuildDockerImage) => {
       with: {
         push: true,
         tags: `${task.getUserName()}/${task.getImageName()}:latest`,
+        file: `${task.getBuildFilePath()}`
       }
     }
   ] 

@@ -20,9 +20,10 @@ test('providing a valid target should not add it to the targets if it is already
   const targets = targetsFactory.createTargets();
 
   targets.addTarget('GitHub');
-  targets.addTarget('GitHub');
 
-  expect(targets.getTargets()).toHaveLength(1);
+  expect(() => {
+    targets.addTarget('GitHub');
+  }).toThrow();
 });
 
 test('calling reset should remove all targets', () => {
