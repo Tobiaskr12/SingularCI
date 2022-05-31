@@ -1,0 +1,29 @@
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+jobs:
+  lint:
+    steps:
+      - run: git clone https://github.com/Tobiaskr12/SingularCI.git
+      - run: |
+          npm install
+          npm run lint
+        working-directory: SingularCI
+    runs-on: ubuntu-latest
+    container: node:16
+  test:
+    steps:
+      - run: git clone https://github.com/Tobiaskr12/SingularCI.git
+      - run: |
+          npm install
+          npm test
+        working-directory: SingularCI
+    runs-on: ubuntu-latest
+    needs:
+      - lint
