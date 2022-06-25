@@ -22,7 +22,7 @@ import IStage from '../SemanticModel/interfaces/IStage';
 
 @Service({ id: 'dslparser' })
 class DSLParser{
-  private inputFileClone: string = "";
+  private inputFileClone = "";
   private fileClonePath: string;
   private inputFilePath: string;
 
