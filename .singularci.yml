@@ -3,12 +3,6 @@ pipeline:
     - GitHub
     - GitLab
 
-  variables:
-    - key: docker_username
-      value: saibotv2
-    - key: image_name
-      value: singularci-test
-
   triggers: 
     trigger_types:
       - push
@@ -43,16 +37,3 @@ pipeline:
             run: 
               - npm install
               - npm test
-
-    - stage:
-        name: docker_build
-        needs: [test]
-        runs_on: ubuntu-latest
-        jobs:
-          - name: execute docker build
-            docker_build:
-              image_name: ${image_name}
-              docker_file_path: ./ 
-              user_name: ${docker_username}
-              password: ${secrets.DOCKER_PASSWORD}
-    
