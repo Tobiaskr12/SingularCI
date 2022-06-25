@@ -16,14 +16,17 @@ import ICheckout from '../../SemanticModel/interfaces/ICheckout';
 export class GitHubConfigGenerator implements TargetPlatformGenerator {
   private pipeline: IPipeline;
   private configObject: any;
+  private parser: DSLParser;
   
   constructor(@Inject('dslparser') parser: DSLParser) {
+    this.parser = parser;
     this.pipeline = parser.parse();
     this.configObject = {};
   }
 
   public generateConfig = () => {
     if (!this.shouldGenerate()) return;
+    this.pipeline = this.parser.parse();
     
     // Generate Folders and files
     this.createFolderStructure();

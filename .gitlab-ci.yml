@@ -1,0 +1,43 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+stages:
+  - lint
+  - test
+  - docker_build
+lint-checkout_repository_and_run_eslint:
+  image: node:16
+  stage: lint
+  needs: []
+  before_script:
+    - git clone https://github.com/Tobiaskr12/SingularCI.git
+    - cd SingularCI
+  script:
+    - npm install
+    - npm run lint
+test-checkout_repository_and_run_tests:
+  image: ubuntu:latest
+  stage: test
+  needs:
+    - lint-checkout_repository_and_run_eslint
+  before_script:
+    - git clone https://github.com/Tobiaskr12/SingularCI.git
+    - cd SingularCI
+  script:
+    - npm install
+    - npm test
+docker_build-execute_docker_build:
+  image: docker:latest
+  stage: docker_build
+  needs:
+    - test-checkout_repository_and_run_tests
+  before_script: []
+  script:
+    - docker login -u saibotv2 -p $DOCKER_PASSWORD
+    - docker build --pull -t "saibotv2/singularci-test" ./
+    - docker push "saibotv2/singularci-test"
+  services:
+    - docker:dind

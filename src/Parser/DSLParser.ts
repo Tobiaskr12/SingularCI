@@ -22,8 +22,9 @@ import IStage from '../SemanticModel/interfaces/IStage';
 
 @Service({ id: 'dslparser' })
 class DSLParser{
-  private inputFileClone;
-  private fileClonePath;
+  private inputFileClone: string = "";
+  private fileClonePath: string;
+  private inputFilePath: string;
 
   @Inject('Pipeline') // @ts-ignore
   private pipeline: IPipeline;
@@ -47,20 +48,25 @@ class DSLParser{
   constructor(
     @Inject('dslparser.inputFileName') inputFileName: string,
   ) {
-    const inputFilePath = path.join(process.cwd(), inputFileName);
+    this.inputFilePath = path.join(process.cwd(), inputFileName);
     const fileCloneName = '.singularci-copy.yml';
     this.fileClonePath = path.join(process.cwd(), fileCloneName);
+  }
 
-    if (!fs.existsSync(inputFilePath)) { 
-      throw new Error(`Error: A .singularci.yml file was not found in the root of the project`);
+  private createTempFile = () => {
+    if (!fs.existsSync(this.inputFilePath)) throw new Error(`Error: File was not found in the root of the project: ${this.inputFilePath}`);
+
+    if (fs.existsSync(this.fileClonePath)) {
+      fs.rmSync(this.fileClonePath);
     }
     
-    fs.copyFileSync(inputFilePath, this.fileClonePath);
+    fs.copyFileSync(this.inputFilePath, this.fileClonePath);
     
     this.inputFileClone = fs.readFileSync(this.fileClonePath, 'utf8');
   }
 
   parse(): IPipeline {
+    this.createTempFile();
     this.validateYAMLStructure();    
 
     const variables = this.buildVariables();

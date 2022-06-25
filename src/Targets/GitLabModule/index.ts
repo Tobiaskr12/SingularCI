@@ -9,21 +9,22 @@ import DSLParser from './../../Parser/DSLParser';
 import IPipeline from './../../SemanticModel/interfaces/IPipeline';
 import IStage from '../../SemanticModel/interfaces/IStage';
 import { TaskType } from '../../SemanticModel/Tasks/TaskEnum';
-import ICheckout from './../../SemanticModel/interfaces/ICheckout';
 
 @Service({ id: "GitLabConfigGenerator" })
 export class GitLabConfigGenerator implements TargetPlatformGenerator {
   private pipeline: IPipeline;
+  private parser: DSLParser;
   private configObject: any;
 
   constructor(@Inject("dslparser") parser: DSLParser) { 
-    this.pipeline = parser.parse();
+    this.parser = parser;
+    this.pipeline = this.parser.parse();
     this.configObject = {};
   }
-
+  
   public generateConfig = () => {
     if (!this.shouldGenerate()) return;
-
+    this.pipeline = this.parser.parse();
     this.buildSecrets();
     this.buildTriggers();
 
@@ -109,7 +110,7 @@ export class GitLabConfigGenerator implements TargetPlatformGenerator {
           // if so then again calling the same function
           this.changeSecretsSyntax(obj[key])
         } else {
-          // else getting the value and replacing single { with {{ and so on
+          // else getting the value and replacing braces with empty spaces
           if (obj[key] !== undefined && isNaN(obj[key])) {
           const secrets: string[] = obj[key].match(/\$\{(secrets\.)[a-zA-Z][^{}]+\}/gm);
           if (secrets) {
